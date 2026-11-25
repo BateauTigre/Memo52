@@ -1,4 +1,4 @@
-/* Mémo 54 — logique du jeu */
+/* Mémo 52 — logique du jeu */
 'use strict';
 /* =====================================================================
    CONFIGURATION — colle ici les infos de ton projet Supabase (gratuit).
@@ -47,6 +47,7 @@ function luminance(hex) {
 const LANGS = ['fr', 'en', 'es', 'de'];
 const I18N = {
 fr: {
+  'set.anim': "Animations", 'anim.pro': "Pro", 'anim.pro.d': "Aucune animation : tout est instantané, tu enchaînes les réponses aussi vite que tu veux.", 'anim.normal': "Normal", 'anim.normal.d': "Animations rapides. Une nouvelle réponse coupe l’animation en cours.", 'anim.real': "Réaliste", 'anim.real.d': "Les cartes volent et se retournent lentement, comme sur une vraie table. Chaque animation va jusqu’au bout.",
   'lang.name': 'Français',
   'top.board': 'Classement', 'board.top10': 'Top 10', 'aria.menu': 'Menu', 'aria.settings': 'Paramètres', 'aria.profile': 'Profil', 'aria.close': 'Fermer',
   'zone.deck': 'Paquet', 'zone.pile': 'Retournées', 'ghost.empty': 'Paquet vide', 'ghost.pile': 'Les cartes retournées arrivent ici',
@@ -57,23 +58,23 @@ fr: {
   'diff.title': 'Choisis ta difficulté', 'diff.normal': 'Normal', 'diff.normal.d': 'Devine la couleur de chaque carte : rouge ou noir.',
   'diff.hard': 'Difficile', 'diff.hard.d': 'Écris la hauteur de chaque carte, en chiffres ou en lettres.',
   'diff.expert': 'Expert', 'diff.expert.d': 'Écris la carte exacte : hauteur et enseigne.', 'diff.change': 'Changer',
-  'diff.hard.ex': '7|dame|R|as|joker', 'diff.expert.ex': 'roi de cœur|10♠|QH|joker rouge',
+  'diff.hard.ex': '7|dame|R|as|10', 'diff.expert.ex': 'roi de cœur|10♠|QH|as de pique',
   'menu.tag': 'Retiens l’ordre du paquet. Une erreur, et tout recommence.', 'menu.hello': 'Connecté en tant que {x}',
   'mode.classic': 'Classique',
-  'mode.classic.d.normal': 'Devine la couleur des 54 cartes. Une erreur et le paquet revient dans son ordre d’origine.',
-  'mode.classic.d.hard': 'Devine la hauteur des 54 cartes. Une erreur et le paquet revient dans son ordre d’origine.',
-  'mode.classic.d.expert': 'Devine chacune des 54 cartes exactement. Une erreur et le paquet revient dans son ordre d’origine.',
-  'mode.infinite': 'Infini', 'mode.infinite.d': '3 vies. Te tromper sur une carte jamais vue est gratuit, mais rater une carte déjà vue coûte une vie. +1 vie par paquet fini.',
-  'mode.chrono': 'Chrono', 'mode.chrono.d': 'Le chrono démarre à ta première réponse.',
-  'mode.half': '½ paquet', 'mode.half.d': '13 rouges · 13 noires', 'mode.full': 'Paquet', 'mode.full.d': '54 cartes', 'mode.c15': '15 min', 'mode.c15.d': 'max de cartes',
+  'mode.classic.d.normal': "Devine la couleur des 52 cartes, une par une. À la moindre erreur, tu repars de la 1ʳᵉ carte : le paquet garde le même ordre.",
+  'mode.classic.d.hard': "Devine la hauteur des 52 cartes, une par une. À la moindre erreur, tu repars de la 1ʳᵉ carte : le paquet garde le même ordre.",
+  'mode.classic.d.expert': "Devine les 52 cartes exactes, une par une. À la moindre erreur, tu repars de la 1ʳᵉ carte : le paquet garde le même ordre.",
+  'mode.infinite': 'Infini', 'mode.infinite.d': "Des paquets à la suite, avec 3 vies. Rater une carte jamais vue : gratuit. Rater une carte déjà vue : −1 vie. Paquet terminé : +1 vie.",
+  'mode.chrono': 'Chrono', 'mode.chrono.d': "Le chrono part à ta première réponse.",
+  'mode.half': '½ paquet', 'mode.half.d': '13 rouges · 13 noires', 'mode.full': 'Paquet', 'mode.full.d': '52 cartes', 'mode.c15': '15 min', 'mode.c15.d': 'max de cartes',
   'hud.mode.full': 'Chrono paquet', 'board.tab.full': 'Paquet chrono', 'board.tab.c15': '15 minutes',
   'rec.classic.none': 'Commence ton premier paquet', 'rec.classic': '{p} · record carte {b}', 'rec.resume': ' · reprise carte {n}', 'rec.inf': 'Record : {x}', 'rec.none': 'Pas encore de record',
   'n.card': 'carte', 'n.cards': 'cartes', 'n.pack': 'paquet', 'n.packs': 'paquets',
   'foot.board': '🏆 Classement', 'foot.settings': '⚙ Paramètres', 'foot.profile': '👤 Profil',
   'rules.title': 'Comment jouer ?',
-  'rules.html': '<p>Un paquet de <b>52 cartes + joker rouge + joker noir</b> est mélangé. Devine la prochaine carte :</p><ul><li><b>Normal</b> : sa couleur, rouge ou noir.</li><li><b>Difficile</b> : sa hauteur (as, 2 à 10, valet, dame, roi ou joker).</li><li><b>Expert</b> : sa hauteur et son enseigne (cœur, carreau, pique, trèfle), ou joker rouge / joker noir.</li></ul><p>✔ Bonne réponse : la carte se retourne et tu devines la suivante.<br>✘ Mauvaise réponse : toutes les cartes retournent dans le paquet <b>dans le même ordre</b>. À toi de te souvenir de la suite !</p><p>Réponses écrites : chiffres ou lettres, majuscules ou minuscules, en français, anglais, espagnol, allemand, italien, portugais ou néerlandais. Ex. : <b>1</b> ou <b>as</b>, <b>v</b> ou <b>valet</b>, <b>roi de cœur</b>, <b>K♥</b>, <b>kh</b>, <b>rey de corazones</b>, <b>Herz König</b>. En Expert, tu peux aussi écrire la hauteur puis toucher le symbole ♥ ♦ ♠ ♣.</p><p>Clavier : <b>←</b> / <b>→</b> en Normal, <b>Entrée</b> pour valider en Difficile et Expert.</p>',
+  'rules.html': '<h5>🎯 Le but</h5><p>Retenir l’ordre d’un paquet de <b>52 cartes</b> mélangé.</p><h5>🃏 Comment ça marche</h5><ol><li>Le paquet est posé face cachée à gauche.</li><li>Tu donnes ta réponse pour la carte du dessus.</li><li><b>Juste</b> : la carte se retourne à droite et tu passes à la suivante.</li><li><b>Faux</b> : toutes les cartes reviennent dans le paquet, <b>dans le même ordre</b>, et tu recommences à la 1ʳᵉ carte.</li></ol><p>Le paquet ne change pas tant que tu ne l’as pas terminé : chaque erreur te fait découvrir une carte de plus.</p><h5>💡 Exemple</h5><p>Le paquet commence par <b>rouge, noir, rouge</b>. Tu réponds rouge ✔, noir ✔, noir ✘. Tout revient au début, mais maintenant tu sais que la 3ᵉ carte est rouge.</p><h5>🎚 Ce que tu dois deviner</h5><ul><li><b>Normal</b> : la couleur (rouge ou noir).</li><li><b>Difficile</b> : la hauteur (as, 2 à 10, valet, dame, roi).</li><li><b>Expert</b> : la carte exacte (hauteur + enseigne).</li></ul><h5>✍️ Écrire ta réponse</h5><p>En chiffres ou en lettres, en majuscules ou en minuscules, dans 7 langues : <b>1</b> ou <b>as</b>, <b>v</b> ou <b>valet</b>, <b>roi de cœur</b>, <b>K♥</b>, <b>kh</b>… En Expert, tu peux aussi écrire la hauteur puis toucher ♥ ♦ ♠ ♣.</p><h5>⚡ Jouer vite</h5><p>Dans les paramètres, choisis les animations <b>Pro</b> : tout devient instantané et tu peux enchaîner les réponses. Clavier : <b>←</b> rouge, <b>→</b> noir, <b>Entrée</b> pour valider une réponse écrite.</p>',
   'board.top100': 'Classement · Top 100', 'board.loading': 'Chargement…', 'board.empty': 'Aucun score pour l’instant.<br>Sois le premier !', 'board.local': 'Mode local : seuls les profils de ce navigateur apparaissent.', 'board.err': 'Classement indisponible pour le moment.', 'board.see100': 'Voir le Top 100 ›', 'board.rank': 'Ton rang', 'board.unranked': 'Pas encore classé ici', 'board.val.classic': '{p} · carte {c}',
-  'toast.resume': 'Reprise : carte {n} sur 54', 'toast.chrono': 'Le chrono démarre à ta première réponse', 'toast.life': '+1 vie ❤', 'toast.newpack': 'Nouveau paquet mélangé !', 'toast.copied': 'Code copié ✔', 'toast.select': 'Sélectionne le code pour le copier',
+  'toast.resume': 'Reprise : carte {n} sur 52', 'toast.chrono': 'Le chrono démarre à ta première réponse', 'toast.life': '+1 vie ❤', 'toast.newpack': 'Nouveau paquet mélangé !', 'toast.copied': 'Code copié ✔', 'toast.select': 'Sélectionne le code pour le copier',
   'cap.miss': 'Raté ! C’était : {x}', 'cap.seen': 'Carte déjà vue : −1 vie', 'cap.unseen': 'Carte jamais vue : pas de vie perdue',
   'ban.half': 'Demi-paquet terminé !', 'ban.full': 'Paquet terminé !',
   'res.lives.t': 'Plus de vies !', 'res.lives.s': 'Cartes mémorisées sur toute la partie', 'res.time.t': 'Temps écoulé !', 'res.time.s': 'Cartes mémorisées en 15 minutes', 'res.done.half': 'Demi-paquet bouclé !', 'res.done.full': 'Paquet bouclé !', 'res.done.s': 'Ton temps', 'res.quit.t': 'Partie terminée', 'res.quit.s': 'Score enregistré', 'res.record': 'Nouveau record !', 'res.calc': 'Calcul de ton rang…', 'res.rank.world': 'Rang mondial : #{p}', 'res.rank.local': 'Ton rang : #{p}', 'res.of': ' sur {t}', 'res.unavail': 'Classement indisponible pour le moment', 'res.localmode': 'Mode local : classement limité à ce navigateur', 'res.menu': 'Menu', 'res.again': 'Rejouer',
@@ -90,10 +91,11 @@ fr: {
   'tn.local': 'Mode local : CONFIG est vide dans script.js (SUPABASE_URL et SUPABASE_KEY).', 'tn.url': 'URL utilisée : ', 'tn.key': 'Clé : ', 'tn.running': 'Test en cours…', 'tn.ok': '✔ Serveur joignable, clé acceptée, fonctions installées.', 'tn.profOk': '✔ Profil « {x} » enregistré et synchronisé.', 'tn.profKo': '✘ Profil : {x}',
   'e.secret': 'Tu as mis la clé SECRÈTE dans script.js. Remplace-la par la clé « Publishable » (sb_publishable_…).', 'e.url': 'SUPABASE_URL invalide dans script.js. Format attendu : https://xxxxxxxx.supabase.co', 'e.net': 'Serveur injoignable. Vérifie SUPABASE_URL, ta connexion, et que le projet Supabase n’est pas en pause.', 'e.key': 'Clé refusée par Supabase. Vérifie SUPABASE_KEY : colle la clé Publishable complète (sb_publishable_…).', 'e.fn': 'Fonctions introuvables sur Supabase : exécute la nouvelle version de supabase.sql en entier dans le SQL Editor, puis réessaie.', 'e.perm': 'Droits manquants sur Supabase : relance le fichier supabase.sql en entier.', 'e.auth': 'Ton profil n’existe pas sur ce serveur. Recharge la page : un nouveau profil sera créé.', 'e.other': 'Erreur serveur : {x}',
   'bg0': 'Minuit', 'bg1': 'Aurore', 'bg2': 'Crépuscule', 'bg3': 'Forêt', 'bg4': 'Graphite', 'felt0': 'Casino', 'felt1': 'Bleu nuit', 'felt2': 'Velours', 'felt3': 'Chêne', 'felt4': 'Ardoise', 'cs.classic': 'Classique', 'cs.royal': 'Royal', 'cs.neon': 'Néon', 'cs.minimal': 'Minimal', 'cs.pixel': 'Rétro pixel',
-  'card.fmt': '{r} de {s}', 'card.joker': 'Joker', 'card.jokerRed': 'Joker rouge', 'card.jokerBlack': 'Joker noir',
+  'card.fmt': '{r} de {s}',
   'rank.A': 'As', 'rank.J': 'Valet', 'rank.Q': 'Dame', 'rank.K': 'Roi', 'suit.H': 'cœur', 'suit.D': 'carreau', 'suit.S': 'pique', 'suit.C': 'trèfle', 'face.J': 'V', 'face.Q': 'D', 'face.K': 'R',
 },
 en: {
+  'set.anim': "Animations", 'anim.pro': "Pro", 'anim.pro.d': "No animation: everything is instant, chain answers as fast as you like.", 'anim.normal': "Normal", 'anim.normal.d': "Quick animations. A new answer cuts the current animation short.", 'anim.real': "Realistic", 'anim.real.d': "Cards fly and flip slowly, like on a real table. Every animation plays to the end.",
   'lang.name': 'English',
   'top.board': 'Leaderboard', 'board.top10': 'Top 10', 'aria.menu': 'Menu', 'aria.settings': 'Settings', 'aria.profile': 'Profile', 'aria.close': 'Close',
   'zone.deck': 'Deck', 'zone.pile': 'Revealed', 'ghost.empty': 'Empty deck', 'ghost.pile': 'Revealed cards land here',
@@ -104,23 +106,23 @@ en: {
   'diff.title': 'Choose your difficulty', 'diff.normal': 'Normal', 'diff.normal.d': 'Guess the colour of each card: red or black.',
   'diff.hard': 'Hard', 'diff.hard.d': 'Type the rank of each card, as a number or a word.',
   'diff.expert': 'Expert', 'diff.expert.d': 'Type the exact card: rank and suit.', 'diff.change': 'Change',
-  'diff.hard.ex': '7|queen|K|ace|joker', 'diff.expert.ex': 'king of hearts|10♠|QH|red joker',
+  'diff.hard.ex': '7|queen|K|ace|10', 'diff.expert.ex': 'king of hearts|10♠|QH|ace of spades',
   'menu.tag': 'Remember the order of the deck. One mistake and it starts over.', 'menu.hello': 'Signed in as {x}',
   'mode.classic': 'Classic',
-  'mode.classic.d.normal': 'Guess the colour of all 54 cards. One mistake and the deck goes back to its original order.',
-  'mode.classic.d.hard': 'Guess the rank of all 54 cards. One mistake and the deck goes back to its original order.',
-  'mode.classic.d.expert': 'Guess each of the 54 cards exactly. One mistake and the deck goes back to its original order.',
-  'mode.infinite': 'Endless', 'mode.infinite.d': '3 lives. Missing a card you have never seen is free, but missing a card you have already seen costs a life. +1 life per finished deck.',
-  'mode.chrono': 'Time trial', 'mode.chrono.d': 'The clock starts with your first answer.',
-  'mode.half': '½ deck', 'mode.half.d': '13 red · 13 black', 'mode.full': 'Deck', 'mode.full.d': '54 cards', 'mode.c15': '15 min', 'mode.c15.d': 'most cards',
+  'mode.classic.d.normal': "Guess the colour of all 52 cards, one by one. One mistake and you start again from card 1: the deck keeps the same order.",
+  'mode.classic.d.hard': "Guess the rank of all 52 cards, one by one. One mistake and you start again from card 1: the deck keeps the same order.",
+  'mode.classic.d.expert': "Guess all 52 exact cards, one by one. One mistake and you start again from card 1: the deck keeps the same order.",
+  'mode.infinite': 'Endless', 'mode.infinite.d': "Deck after deck, with 3 lives. Missing a card you have never seen: free. Missing a card you have already seen: −1 life. Finished deck: +1 life.",
+  'mode.chrono': 'Time trial', 'mode.chrono.d': "The clock starts with your first answer.",
+  'mode.half': '½ deck', 'mode.half.d': '13 red · 13 black', 'mode.full': 'Deck', 'mode.full.d': '52 cards', 'mode.c15': '15 min', 'mode.c15.d': 'most cards',
   'hud.mode.full': 'Deck time trial', 'board.tab.full': 'Deck time trial', 'board.tab.c15': '15 minutes',
   'rec.classic.none': 'Start your first deck', 'rec.classic': '{p} · best card {b}', 'rec.resume': ' · resume at card {n}', 'rec.inf': 'Best: {x}', 'rec.none': 'No record yet',
   'n.card': 'card', 'n.cards': 'cards', 'n.pack': 'deck', 'n.packs': 'decks',
   'foot.board': '🏆 Leaderboard', 'foot.settings': '⚙ Settings', 'foot.profile': '👤 Profile',
   'rules.title': 'How to play',
-  'rules.html': '<p>A deck of <b>52 cards + red joker + black joker</b> is shuffled. Guess the next card:</p><ul><li><b>Normal</b>: its colour, red or black.</li><li><b>Hard</b>: its rank (ace, 2 to 10, jack, queen, king or joker).</li><li><b>Expert</b>: its rank and suit (hearts, diamonds, spades, clubs), or red joker / black joker.</li></ul><p>✔ Right: the card is revealed and you guess the next one.<br>✘ Wrong: every card goes back into the deck <b>in the same order</b>. Remember what comes next!</p><p>Typed answers: numbers or words, upper or lower case, in English, French, Spanish, German, Italian, Portuguese or Dutch. E.g. <b>1</b> or <b>ace</b>, <b>j</b> or <b>jack</b>, <b>king of hearts</b>, <b>K♥</b>, <b>kh</b>, <b>roi de cœur</b>, <b>Herz König</b>. In Expert you can also type the rank and tap ♥ ♦ ♠ ♣.</p><p>Keyboard: <b>←</b> / <b>→</b> in Normal, <b>Enter</b> to submit in Hard and Expert.</p>',
+  'rules.html': '<h5>🎯 Goal</h5><p>Remember the order of a shuffled <b>52-card</b> deck.</p><h5>🃏 How it works</h5><ol><li>The deck lies face down on the left.</li><li>You answer for the top card.</li><li><b>Right</b>: the card flips onto the right pile and you move on.</li><li><b>Wrong</b>: every card goes back into the deck <b>in the same order</b> and you start again from card 1.</li></ol><p>The deck does not change until you finish it: every mistake shows you one more card.</p><h5>💡 Example</h5><p>The deck starts <b>red, black, red</b>. You answer red ✔, black ✔, black ✘. Everything goes back, but now you know card 3 is red.</p><h5>🎚 What you guess</h5><ul><li><b>Normal</b>: the colour (red or black).</li><li><b>Hard</b>: the rank (ace, 2 to 10, jack, queen, king).</li><li><b>Expert</b>: the exact card (rank + suit).</li></ul><h5>✍️ Typing your answer</h5><p>Numbers or words, upper or lower case, in 7 languages: <b>1</b> or <b>ace</b>, <b>j</b> or <b>jack</b>, <b>king of hearts</b>, <b>K♥</b>, <b>kh</b>… In Expert you can also type the rank and tap ♥ ♦ ♠ ♣.</p><h5>⚡ Playing fast</h5><p>In the settings, pick <b>Pro</b> animations: everything is instant and you can chain answers. Keyboard: <b>←</b> red, <b>→</b> black, <b>Enter</b> to submit a typed answer.</p>',
   'board.top100': 'Leaderboard · Top 100', 'board.loading': 'Loading…', 'board.empty': 'No scores yet.<br>Be the first!', 'board.local': 'Local mode: only profiles from this browser are shown.', 'board.err': 'Leaderboard unavailable right now.', 'board.see100': 'See the Top 100 ›', 'board.rank': 'Your rank', 'board.unranked': 'Not ranked here yet', 'board.val.classic': '{p} · card {c}',
-  'toast.resume': 'Resuming: card {n} of 54', 'toast.chrono': 'The clock starts with your first answer', 'toast.life': '+1 life ❤', 'toast.newpack': 'New deck shuffled!', 'toast.copied': 'Code copied ✔', 'toast.select': 'Select the code to copy it',
+  'toast.resume': 'Resuming: card {n} of 52', 'toast.chrono': 'The clock starts with your first answer', 'toast.life': '+1 life ❤', 'toast.newpack': 'New deck shuffled!', 'toast.copied': 'Code copied ✔', 'toast.select': 'Select the code to copy it',
   'cap.miss': 'Missed! It was: {x}', 'cap.seen': 'Card already seen: −1 life', 'cap.unseen': 'Card never seen: no life lost',
   'ban.half': 'Half deck done!', 'ban.full': 'Deck done!',
   'res.lives.t': 'Out of lives!', 'res.lives.s': 'Cards memorised over the whole game', 'res.time.t': 'Time’s up!', 'res.time.s': 'Cards memorised in 15 minutes', 'res.done.half': 'Half deck cleared!', 'res.done.full': 'Deck cleared!', 'res.done.s': 'Your time', 'res.quit.t': 'Game over', 'res.quit.s': 'Score saved', 'res.record': 'New record!', 'res.calc': 'Working out your rank…', 'res.rank.world': 'World rank: #{p}', 'res.rank.local': 'Your rank: #{p}', 'res.of': ' of {t}', 'res.unavail': 'Leaderboard unavailable right now', 'res.localmode': 'Local mode: leaderboard limited to this browser', 'res.menu': 'Menu', 'res.again': 'Play again',
@@ -137,10 +139,11 @@ en: {
   'tn.local': 'Local mode: CONFIG is empty in script.js (SUPABASE_URL and SUPABASE_KEY).', 'tn.url': 'URL used: ', 'tn.key': 'Key: ', 'tn.running': 'Testing…', 'tn.ok': '✔ Server reachable, key accepted, functions installed.', 'tn.profOk': '✔ Profile “{x}” registered and synced.', 'tn.profKo': '✘ Profile: {x}',
   'e.secret': 'You put the SECRET key in script.js. Replace it with the “Publishable” key (sb_publishable_…).', 'e.url': 'Invalid SUPABASE_URL in script.js. Expected: https://xxxxxxxx.supabase.co', 'e.net': 'Server unreachable. Check SUPABASE_URL, your connection, and that the Supabase project is not paused.', 'e.key': 'Key rejected by Supabase. Check SUPABASE_KEY: paste the full Publishable key (sb_publishable_…).', 'e.fn': 'Functions not found on Supabase: run the new supabase.sql in full in the SQL Editor, then try again.', 'e.perm': 'Missing permissions on Supabase: run supabase.sql again in full.', 'e.auth': 'Your profile does not exist on this server. Reload the page: a new profile will be created.', 'e.other': 'Server error: {x}',
   'bg0': 'Midnight', 'bg1': 'Dawn', 'bg2': 'Dusk', 'bg3': 'Forest', 'bg4': 'Graphite', 'felt0': 'Casino', 'felt1': 'Night blue', 'felt2': 'Velvet', 'felt3': 'Oak', 'felt4': 'Slate', 'cs.classic': 'Classic', 'cs.royal': 'Royal', 'cs.neon': 'Neon', 'cs.minimal': 'Minimal', 'cs.pixel': 'Retro pixel',
-  'card.fmt': '{r} of {s}', 'card.joker': 'Joker', 'card.jokerRed': 'Red joker', 'card.jokerBlack': 'Black joker',
+  'card.fmt': '{r} of {s}',
   'rank.A': 'Ace', 'rank.J': 'Jack', 'rank.Q': 'Queen', 'rank.K': 'King', 'suit.H': 'hearts', 'suit.D': 'diamonds', 'suit.S': 'spades', 'suit.C': 'clubs', 'face.J': 'J', 'face.Q': 'Q', 'face.K': 'K',
 },
 es: {
+  'set.anim': "Animaciones", 'anim.pro': "Pro", 'anim.pro.d': "Sin animaciones: todo es instantáneo, encadena respuestas tan rápido como quieras.", 'anim.normal': "Normal", 'anim.normal.d': "Animaciones rápidas. Una nueva respuesta corta la animación en curso.", 'anim.real': "Realista", 'anim.real.d': "Las cartas vuelan y se giran despacio, como en una mesa de verdad. Cada animación llega hasta el final.",
   'lang.name': 'Español',
   'top.board': 'Clasificación', 'board.top10': 'Top 10', 'aria.menu': 'Menú', 'aria.settings': 'Ajustes', 'aria.profile': 'Perfil', 'aria.close': 'Cerrar',
   'zone.deck': 'Mazo', 'zone.pile': 'Reveladas', 'ghost.empty': 'Mazo vacío', 'ghost.pile': 'Aquí caen las cartas reveladas',
@@ -151,23 +154,23 @@ es: {
   'diff.title': 'Elige tu dificultad', 'diff.normal': 'Normal', 'diff.normal.d': 'Adivina el color de cada carta: rojo o negro.',
   'diff.hard': 'Difícil', 'diff.hard.d': 'Escribe el valor de cada carta, en número o en letras.',
   'diff.expert': 'Experto', 'diff.expert.d': 'Escribe la carta exacta: valor y palo.', 'diff.change': 'Cambiar',
-  'diff.hard.ex': '7|reina|K|as|joker', 'diff.expert.ex': 'rey de corazones|10♠|QH|joker rojo',
+  'diff.hard.ex': '7|reina|K|as|10', 'diff.expert.ex': 'rey de corazones|10♠|QH|as de picas',
   'menu.tag': 'Memoriza el orden del mazo. Un error y todo vuelve a empezar.', 'menu.hello': 'Conectado como {x}',
   'mode.classic': 'Clásico',
-  'mode.classic.d.normal': 'Adivina el color de las 54 cartas. Un error y el mazo vuelve a su orden original.',
-  'mode.classic.d.hard': 'Adivina el valor de las 54 cartas. Un error y el mazo vuelve a su orden original.',
-  'mode.classic.d.expert': 'Adivina exactamente cada una de las 54 cartas. Un error y el mazo vuelve a su orden original.',
-  'mode.infinite': 'Infinito', 'mode.infinite.d': '3 vidas. Fallar una carta nunca vista es gratis, pero fallar una carta ya vista cuesta una vida. +1 vida por mazo terminado.',
-  'mode.chrono': 'Contrarreloj', 'mode.chrono.d': 'El reloj empieza con tu primera respuesta.',
-  'mode.half': '½ mazo', 'mode.half.d': '13 rojas · 13 negras', 'mode.full': 'Mazo', 'mode.full.d': '54 cartas', 'mode.c15': '15 min', 'mode.c15.d': 'máximo de cartas',
+  'mode.classic.d.normal': "Adivina el color de las 52 cartas, una a una. Al primer error vuelves a la 1.ª carta: el mazo mantiene el mismo orden.",
+  'mode.classic.d.hard': "Adivina el valor de las 52 cartas, una a una. Al primer error vuelves a la 1.ª carta: el mazo mantiene el mismo orden.",
+  'mode.classic.d.expert': "Adivina las 52 cartas exactas, una a una. Al primer error vuelves a la 1.ª carta: el mazo mantiene el mismo orden.",
+  'mode.infinite': 'Infinito', 'mode.infinite.d': "Mazo tras mazo, con 3 vidas. Fallar una carta nunca vista: gratis. Fallar una carta ya vista: −1 vida. Mazo terminado: +1 vida.",
+  'mode.chrono': 'Contrarreloj', 'mode.chrono.d': "El reloj empieza con tu primera respuesta.",
+  'mode.half': '½ mazo', 'mode.half.d': '13 rojas · 13 negras', 'mode.full': 'Mazo', 'mode.full.d': '52 cartas', 'mode.c15': '15 min', 'mode.c15.d': 'máximo de cartas',
   'hud.mode.full': 'Mazo contrarreloj', 'board.tab.full': 'Mazo contrarreloj', 'board.tab.c15': '15 minutos',
   'rec.classic.none': 'Empieza tu primer mazo', 'rec.classic': '{p} · récord carta {b}', 'rec.resume': ' · seguir en la carta {n}', 'rec.inf': 'Récord: {x}', 'rec.none': 'Aún sin récord',
   'n.card': 'carta', 'n.cards': 'cartas', 'n.pack': 'mazo', 'n.packs': 'mazos',
   'foot.board': '🏆 Clasificación', 'foot.settings': '⚙ Ajustes', 'foot.profile': '👤 Perfil',
   'rules.title': '¿Cómo se juega?',
-  'rules.html': '<p>Se baraja un mazo de <b>52 cartas + joker rojo + joker negro</b>. Adivina la siguiente carta:</p><ul><li><b>Normal</b>: su color, rojo o negro.</li><li><b>Difícil</b>: su valor (as, 2 a 10, jota, reina, rey o joker).</li><li><b>Experto</b>: su valor y su palo (corazones, diamantes, picas, tréboles), o joker rojo / joker negro.</li></ul><p>✔ Acierto: la carta se revela y adivinas la siguiente.<br>✘ Fallo: todas las cartas vuelven al mazo <b>en el mismo orden</b>. ¡Recuerda lo que viene!</p><p>Respuestas escritas: números o palabras, mayúsculas o minúsculas, en español, francés, inglés, alemán, italiano, portugués o neerlandés. Ej.: <b>1</b> o <b>as</b>, <b>j</b> o <b>jota</b>, <b>rey de corazones</b>, <b>K♥</b>, <b>kh</b>, <b>roi de cœur</b>, <b>Herz König</b>. En Experto también puedes escribir el valor y tocar ♥ ♦ ♠ ♣.</p><p>Teclado: <b>←</b> / <b>→</b> en Normal, <b>Intro</b> para validar en Difícil y Experto.</p>',
+  'rules.html': '<h5>🎯 Objetivo</h5><p>Memorizar el orden de un mazo barajado de <b>52 cartas</b>.</p><h5>🃏 Cómo funciona</h5><ol><li>El mazo está boca abajo a la izquierda.</li><li>Respondes por la carta de arriba.</li><li><b>Acierto</b>: la carta se gira a la derecha y pasas a la siguiente.</li><li><b>Fallo</b>: todas las cartas vuelven al mazo <b>en el mismo orden</b> y empiezas otra vez por la 1.ª carta.</li></ol><p>El mazo no cambia hasta que lo terminas: cada error te descubre una carta más.</p><h5>💡 Ejemplo</h5><p>El mazo empieza por <b>rojo, negro, rojo</b>. Respondes rojo ✔, negro ✔, negro ✘. Todo vuelve al principio, pero ahora sabes que la 3.ª carta es roja.</p><h5>🎚 Qué adivinas</h5><ul><li><b>Normal</b>: el color (rojo o negro).</li><li><b>Difícil</b>: el valor (as, 2 a 10, jota, reina, rey).</li><li><b>Experto</b>: la carta exacta (valor + palo).</li></ul><h5>✍️ Escribir la respuesta</h5><p>Números o palabras, mayúsculas o minúsculas, en 7 idiomas: <b>1</b> o <b>as</b>, <b>j</b> o <b>jota</b>, <b>rey de corazones</b>, <b>K♥</b>, <b>kh</b>… En Experto también puedes escribir el valor y tocar ♥ ♦ ♠ ♣.</p><h5>⚡ Jugar rápido</h5><p>En los ajustes, elige las animaciones <b>Pro</b>: todo es instantáneo y puedes encadenar respuestas. Teclado: <b>←</b> rojo, <b>→</b> negro, <b>Intro</b> para validar una respuesta escrita.</p>',
   'board.top100': 'Clasificación · Top 100', 'board.loading': 'Cargando…', 'board.empty': 'Todavía no hay puntuaciones.<br>¡Sé el primero!', 'board.local': 'Modo local: solo aparecen los perfiles de este navegador.', 'board.err': 'Clasificación no disponible por ahora.', 'board.see100': 'Ver el Top 100 ›', 'board.rank': 'Tu puesto', 'board.unranked': 'Aún sin clasificar aquí', 'board.val.classic': '{p} · carta {c}',
-  'toast.resume': 'Continúas: carta {n} de 54', 'toast.chrono': 'El reloj empieza con tu primera respuesta', 'toast.life': '+1 vida ❤', 'toast.newpack': '¡Nuevo mazo barajado!', 'toast.copied': 'Código copiado ✔', 'toast.select': 'Selecciona el código para copiarlo',
+  'toast.resume': 'Continúas: carta {n} de 52', 'toast.chrono': 'El reloj empieza con tu primera respuesta', 'toast.life': '+1 vida ❤', 'toast.newpack': '¡Nuevo mazo barajado!', 'toast.copied': 'Código copiado ✔', 'toast.select': 'Selecciona el código para copiarlo',
   'cap.miss': '¡Fallo! Era: {x}', 'cap.seen': 'Carta ya vista: −1 vida', 'cap.unseen': 'Carta nunca vista: no pierdes vida',
   'ban.half': '¡Medio mazo terminado!', 'ban.full': '¡Mazo terminado!',
   'res.lives.t': '¡Sin vidas!', 'res.lives.s': 'Cartas memorizadas en toda la partida', 'res.time.t': '¡Se acabó el tiempo!', 'res.time.s': 'Cartas memorizadas en 15 minutos', 'res.done.half': '¡Medio mazo completado!', 'res.done.full': '¡Mazo completado!', 'res.done.s': 'Tu tiempo', 'res.quit.t': 'Partida terminada', 'res.quit.s': 'Puntuación guardada', 'res.record': '¡Nuevo récord!', 'res.calc': 'Calculando tu puesto…', 'res.rank.world': 'Puesto mundial: #{p}', 'res.rank.local': 'Tu puesto: #{p}', 'res.of': ' de {t}', 'res.unavail': 'Clasificación no disponible por ahora', 'res.localmode': 'Modo local: clasificación limitada a este navegador', 'res.menu': 'Menú', 'res.again': 'Jugar otra vez',
@@ -184,10 +187,11 @@ es: {
   'tn.local': 'Modo local: CONFIG está vacío en script.js (SUPABASE_URL y SUPABASE_KEY).', 'tn.url': 'URL usada: ', 'tn.key': 'Clave: ', 'tn.running': 'Probando…', 'tn.ok': '✔ Servidor accesible, clave aceptada, funciones instaladas.', 'tn.profOk': '✔ Perfil «{x}» registrado y sincronizado.', 'tn.profKo': '✘ Perfil: {x}',
   'e.secret': 'Has puesto la clave SECRETA en script.js. Sustitúyela por la clave «Publishable» (sb_publishable_…).', 'e.url': 'SUPABASE_URL no válida en script.js. Formato: https://xxxxxxxx.supabase.co', 'e.net': 'Servidor inaccesible. Revisa SUPABASE_URL, tu conexión y que el proyecto Supabase no esté en pausa.', 'e.key': 'Supabase rechaza la clave. Revisa SUPABASE_KEY: pega la clave Publishable completa (sb_publishable_…).', 'e.fn': 'Funciones no encontradas en Supabase: ejecuta la nueva versión completa de supabase.sql en el SQL Editor y vuelve a probar.', 'e.perm': 'Faltan permisos en Supabase: vuelve a ejecutar supabase.sql completo.', 'e.auth': 'Tu perfil no existe en este servidor. Recarga la página: se creará uno nuevo.', 'e.other': 'Error del servidor: {x}',
   'bg0': 'Medianoche', 'bg1': 'Aurora', 'bg2': 'Atardecer', 'bg3': 'Bosque', 'bg4': 'Grafito', 'felt0': 'Casino', 'felt1': 'Azul noche', 'felt2': 'Terciopelo', 'felt3': 'Roble', 'felt4': 'Pizarra', 'cs.classic': 'Clásico', 'cs.royal': 'Real', 'cs.neon': 'Neón', 'cs.minimal': 'Minimal', 'cs.pixel': 'Retro píxel',
-  'card.fmt': '{r} de {s}', 'card.joker': 'Joker', 'card.jokerRed': 'Joker rojo', 'card.jokerBlack': 'Joker negro',
+  'card.fmt': '{r} de {s}',
   'rank.A': 'As', 'rank.J': 'Jota', 'rank.Q': 'Reina', 'rank.K': 'Rey', 'suit.H': 'corazones', 'suit.D': 'diamantes', 'suit.S': 'picas', 'suit.C': 'tréboles', 'face.J': 'J', 'face.Q': 'Q', 'face.K': 'K',
 },
 de: {
+  'set.anim': "Animationen", 'anim.pro': "Profi", 'anim.pro.d': "Keine Animationen: alles passiert sofort, gib Antworten so schnell hintereinander ein, wie du willst.", 'anim.normal': "Normal", 'anim.normal.d': "Schnelle Animationen. Eine neue Antwort bricht die laufende Animation ab.", 'anim.real': "Realistisch", 'anim.real.d': "Karten fliegen und drehen sich langsam wie auf einem echten Tisch. Jede Animation läuft bis zum Ende.",
   'lang.name': 'Deutsch',
   'top.board': 'Rangliste', 'board.top10': 'Top 10', 'aria.menu': 'Menü', 'aria.settings': 'Einstellungen', 'aria.profile': 'Profil', 'aria.close': 'Schließen',
   'zone.deck': 'Stapel', 'zone.pile': 'Aufgedeckt', 'ghost.empty': 'Stapel leer', 'ghost.pile': 'Hier landen die aufgedeckten Karten',
@@ -198,23 +202,23 @@ de: {
   'diff.title': 'Wähle deinen Schwierigkeitsgrad', 'diff.normal': 'Normal', 'diff.normal.d': 'Rate die Farbe jeder Karte: rot oder schwarz.',
   'diff.hard': 'Schwer', 'diff.hard.d': 'Schreibe den Wert jeder Karte, als Zahl oder Wort.',
   'diff.expert': 'Experte', 'diff.expert.d': 'Schreibe die genaue Karte: Wert und Farbe.', 'diff.change': 'Ändern',
-  'diff.hard.ex': '7|Dame|K|Ass|Joker', 'diff.expert.ex': 'Herz König|10♠|QH|roter Joker',
+  'diff.hard.ex': '7|Dame|K|Ass|10', 'diff.expert.ex': 'Herz König|10♠|QH|Pik Ass',
   'menu.tag': 'Merk dir die Reihenfolge. Ein Fehler und alles beginnt von vorn.', 'menu.hello': 'Angemeldet als {x}',
   'mode.classic': 'Klassisch',
-  'mode.classic.d.normal': 'Rate die Farbe aller 54 Karten. Ein Fehler und der Stapel kehrt in seine ursprüngliche Reihenfolge zurück.',
-  'mode.classic.d.hard': 'Rate den Wert aller 54 Karten. Ein Fehler und der Stapel kehrt in seine ursprüngliche Reihenfolge zurück.',
-  'mode.classic.d.expert': 'Rate jede der 54 Karten genau. Ein Fehler und der Stapel kehrt in seine ursprüngliche Reihenfolge zurück.',
-  'mode.infinite': 'Endlos', 'mode.infinite.d': '3 Leben. Ein Fehler bei einer nie gesehenen Karte ist gratis, ein Fehler bei einer schon gesehenen Karte kostet ein Leben. +1 Leben pro fertigem Stapel.',
-  'mode.chrono': 'Zeitrennen', 'mode.chrono.d': 'Die Uhr startet mit deiner ersten Antwort.',
-  'mode.half': '½ Stapel', 'mode.half.d': '13 rote · 13 schwarze', 'mode.full': 'Stapel', 'mode.full.d': '54 Karten', 'mode.c15': '15 Min', 'mode.c15.d': 'max. Karten',
+  'mode.classic.d.normal': "Rate die Farbe aller 52 Karten, eine nach der anderen. Beim ersten Fehler geht es zurück zur 1. Karte: der Stapel behält dieselbe Reihenfolge.",
+  'mode.classic.d.hard': "Rate den Wert aller 52 Karten, eine nach der anderen. Beim ersten Fehler geht es zurück zur 1. Karte: der Stapel behält dieselbe Reihenfolge.",
+  'mode.classic.d.expert': "Rate alle 52 Karten genau, eine nach der anderen. Beim ersten Fehler geht es zurück zur 1. Karte: der Stapel behält dieselbe Reihenfolge.",
+  'mode.infinite': 'Endlos', 'mode.infinite.d': "Stapel für Stapel, mit 3 Leben. Fehler bei einer nie gesehenen Karte: gratis. Fehler bei einer schon gesehenen Karte: −1 Leben. Stapel geschafft: +1 Leben.",
+  'mode.chrono': 'Zeitrennen', 'mode.chrono.d': "Die Uhr startet mit deiner ersten Antwort.",
+  'mode.half': '½ Stapel', 'mode.half.d': '13 rote · 13 schwarze', 'mode.full': 'Stapel', 'mode.full.d': '52 Karten', 'mode.c15': '15 Min', 'mode.c15.d': 'max. Karten',
   'hud.mode.full': 'Stapel-Zeitrennen', 'board.tab.full': 'Stapel-Zeitrennen', 'board.tab.c15': '15 Minuten',
   'rec.classic.none': 'Starte deinen ersten Stapel', 'rec.classic': '{p} · Rekord Karte {b}', 'rec.resume': ' · weiter bei Karte {n}', 'rec.inf': 'Rekord: {x}', 'rec.none': 'Noch kein Rekord',
   'n.card': 'Karte', 'n.cards': 'Karten', 'n.pack': 'Stapel', 'n.packs': 'Stapel',
   'foot.board': '🏆 Rangliste', 'foot.settings': '⚙ Einstellungen', 'foot.profile': '👤 Profil',
   'rules.title': 'Wie spielt man?',
-  'rules.html': '<p>Ein Stapel aus <b>52 Karten + rotem Joker + schwarzem Joker</b> wird gemischt. Rate die nächste Karte:</p><ul><li><b>Normal</b>: ihre Farbe, rot oder schwarz.</li><li><b>Schwer</b>: ihren Wert (Ass, 2 bis 10, Bube, Dame, König oder Joker).</li><li><b>Experte</b>: Wert und Farbe (Herz, Karo, Pik, Kreuz), oder roter / schwarzer Joker.</li></ul><p>✔ Richtig: die Karte wird aufgedeckt und du rätst die nächste.<br>✘ Falsch: alle Karten gehen <b>in derselben Reihenfolge</b> zurück in den Stapel. Merk dir, was kommt!</p><p>Geschriebene Antworten: Zahlen oder Wörter, groß oder klein, auf Deutsch, Französisch, Englisch, Spanisch, Italienisch, Portugiesisch oder Niederländisch. Z. B. <b>1</b> oder <b>Ass</b>, <b>b</b> oder <b>Bube</b>, <b>Herz König</b>, <b>K♥</b>, <b>kh</b>, <b>roi de cœur</b>, <b>king of hearts</b>. Als Experte kannst du auch den Wert schreiben und ♥ ♦ ♠ ♣ tippen.</p><p>Tastatur: <b>←</b> / <b>→</b> in Normal, <b>Enter</b> zum Bestätigen in Schwer und Experte.</p>',
+  'rules.html': '<h5>🎯 Ziel</h5><p>Merk dir die Reihenfolge eines gemischten Stapels mit <b>52 Karten</b>.</p><h5>🃏 So funktioniert’s</h5><ol><li>Der Stapel liegt verdeckt links.</li><li>Du antwortest für die oberste Karte.</li><li><b>Richtig</b>: die Karte wird rechts aufgedeckt und du machst mit der nächsten weiter.</li><li><b>Falsch</b>: alle Karten gehen <b>in derselben Reihenfolge</b> zurück in den Stapel und du beginnst wieder bei Karte 1.</li></ol><p>Der Stapel ändert sich nicht, bis du ihn geschafft hast: jeder Fehler zeigt dir eine Karte mehr.</p><h5>💡 Beispiel</h5><p>Der Stapel beginnt mit <b>rot, schwarz, rot</b>. Du antwortest rot ✔, schwarz ✔, schwarz ✘. Alles geht zurück, aber jetzt weißt du: Karte 3 ist rot.</p><h5>🎚 Was du rätst</h5><ul><li><b>Normal</b>: die Farbe (rot oder schwarz).</li><li><b>Schwer</b>: den Wert (Ass, 2 bis 10, Bube, Dame, König).</li><li><b>Experte</b>: die genaue Karte (Wert + Farbe).</li></ul><h5>✍️ Antwort schreiben</h5><p>Zahlen oder Wörter, groß oder klein, in 7 Sprachen: <b>1</b> oder <b>Ass</b>, <b>b</b> oder <b>Bube</b>, <b>Herz König</b>, <b>K♥</b>, <b>kh</b>… Als Experte kannst du auch den Wert schreiben und ♥ ♦ ♠ ♣ tippen.</p><h5>⚡ Schnell spielen</h5><p>Wähle in den Einstellungen die Animationen <b>Profi</b>: alles passiert sofort und du kannst Antworten aneinanderreihen. Tastatur: <b>←</b> rot, <b>→</b> schwarz, <b>Enter</b> für eine geschriebene Antwort.</p>',
   'board.top100': 'Rangliste · Top 100', 'board.loading': 'Wird geladen…', 'board.empty': 'Noch keine Punkte.<br>Sei der Erste!', 'board.local': 'Lokaler Modus: nur Profile aus diesem Browser.', 'board.err': 'Rangliste gerade nicht verfügbar.', 'board.see100': 'Top 100 ansehen ›', 'board.rank': 'Dein Rang', 'board.unranked': 'Hier noch nicht platziert', 'board.val.classic': '{p} · Karte {c}',
-  'toast.resume': 'Weiter: Karte {n} von 54', 'toast.chrono': 'Die Uhr startet mit deiner ersten Antwort', 'toast.life': '+1 Leben ❤', 'toast.newpack': 'Neuer Stapel gemischt!', 'toast.copied': 'Code kopiert ✔', 'toast.select': 'Markiere den Code, um ihn zu kopieren',
+  'toast.resume': 'Weiter: Karte {n} von 52', 'toast.chrono': 'Die Uhr startet mit deiner ersten Antwort', 'toast.life': '+1 Leben ❤', 'toast.newpack': 'Neuer Stapel gemischt!', 'toast.copied': 'Code kopiert ✔', 'toast.select': 'Markiere den Code, um ihn zu kopieren',
   'cap.miss': 'Daneben! Es war: {x}', 'cap.seen': 'Karte schon gesehen: −1 Leben', 'cap.unseen': 'Karte nie gesehen: kein Leben verloren',
   'ban.half': 'Halber Stapel geschafft!', 'ban.full': 'Stapel geschafft!',
   'res.lives.t': 'Keine Leben mehr!', 'res.lives.s': 'Gemerkte Karten im ganzen Spiel', 'res.time.t': 'Zeit abgelaufen!', 'res.time.s': 'Gemerkte Karten in 15 Minuten', 'res.done.half': 'Halber Stapel geschafft!', 'res.done.full': 'Stapel geschafft!', 'res.done.s': 'Deine Zeit', 'res.quit.t': 'Spiel beendet', 'res.quit.s': 'Punkte gespeichert', 'res.record': 'Neuer Rekord!', 'res.calc': 'Dein Rang wird berechnet…', 'res.rank.world': 'Weltrang: #{p}', 'res.rank.local': 'Dein Rang: #{p}', 'res.of': ' von {t}', 'res.unavail': 'Rangliste gerade nicht verfügbar', 'res.localmode': 'Lokaler Modus: Rangliste nur für diesen Browser', 'res.menu': 'Menü', 'res.again': 'Nochmal',
@@ -231,7 +235,7 @@ de: {
   'tn.local': 'Lokaler Modus: CONFIG ist in script.js leer (SUPABASE_URL und SUPABASE_KEY).', 'tn.url': 'Verwendete URL: ', 'tn.key': 'Schlüssel: ', 'tn.running': 'Test läuft…', 'tn.ok': '✔ Server erreichbar, Schlüssel akzeptiert, Funktionen installiert.', 'tn.profOk': '✔ Profil „{x}“ registriert und synchronisiert.', 'tn.profKo': '✘ Profil: {x}',
   'e.secret': 'Du hast den GEHEIMEN Schlüssel in script.js eingetragen. Ersetze ihn durch den „Publishable“-Schlüssel (sb_publishable_…).', 'e.url': 'Ungültige SUPABASE_URL in script.js. Format: https://xxxxxxxx.supabase.co', 'e.net': 'Server nicht erreichbar. Prüfe SUPABASE_URL, deine Verbindung und ob das Supabase-Projekt pausiert ist.', 'e.key': 'Schlüssel von Supabase abgelehnt. Prüfe SUPABASE_KEY: füge den vollständigen Publishable-Schlüssel ein (sb_publishable_…).', 'e.fn': 'Funktionen auf Supabase nicht gefunden: führe die neue supabase.sql vollständig im SQL Editor aus und versuche es erneut.', 'e.perm': 'Fehlende Rechte auf Supabase: führe supabase.sql erneut vollständig aus.', 'e.auth': 'Dein Profil existiert auf diesem Server nicht. Lade die Seite neu: ein neues Profil wird erstellt.', 'e.other': 'Serverfehler: {x}',
   'bg0': 'Mitternacht', 'bg1': 'Morgenrot', 'bg2': 'Dämmerung', 'bg3': 'Wald', 'bg4': 'Graphit', 'felt0': 'Casino', 'felt1': 'Nachtblau', 'felt2': 'Samt', 'felt3': 'Eiche', 'felt4': 'Schiefer', 'cs.classic': 'Klassisch', 'cs.royal': 'Königlich', 'cs.neon': 'Neon', 'cs.minimal': 'Minimal', 'cs.pixel': 'Retro-Pixel',
-  'card.fmt': '{s} {r}', 'card.joker': 'Joker', 'card.jokerRed': 'Roter Joker', 'card.jokerBlack': 'Schwarzer Joker',
+  'card.fmt': '{s} {r}',
   'rank.A': 'Ass', 'rank.J': 'Bube', 'rank.Q': 'Dame', 'rank.K': 'König', 'suit.H': 'Herz', 'suit.D': 'Karo', 'suit.S': 'Pik', 'suit.C': 'Kreuz', 'face.J': 'B', 'face.Q': 'D', 'face.K': 'K',
 },
 };
@@ -265,7 +269,6 @@ const WORDS = {
     J: '11 V J B valet jack knave jota sota Bube Bauer fante valete boer',
     Q: '12 D Q dame reine queen reina dama Königin donna regina rainha vrouw koningin',
     K: '13 R K roi king rey König re rei heer koning',
-    JK: 'joker jokers jolly comodín coringa curinga jocker ★ *',
   },
   suit: {
     H: '♥ ♡ H cœur cœurs heart hearts corazón corazones Herz cuori cuore copas harten',
@@ -285,30 +288,19 @@ const RANK_W = {}, SUIT_W = {}, COLOR_W = {};
 for (const [k, l] of Object.entries(WORDS.rank)) l.split(' ').forEach(w => { RANK_W[normTxt(w)] = k; });
 for (const [k, l] of Object.entries(WORDS.suit)) l.split(' ').forEach(w => { SUIT_W[normTxt(w)] = k; });
 for (const [k, l] of Object.entries(WORDS.color)) l.split(' ').forEach(w => { COLOR_W[normTxt(w)] = k; });
-const SUIT_SYMS = '♥♡♦♢♠♤♣♧★*';
+const SUIT_SYMS = '♥♡♦♢♠♤♣♧';
 function tokenize(s) {
   s = normTxt(s).replace(new RegExp('([' + SUIT_SYMS + '])', 'g'), ' $1 ').replace(/(\d+)/g, ' $1 ');
   return s.split(new RegExp('[^a-z0-9' + SUIT_SYMS + ']+')).filter(w => w && !FILLER.has(w));
 }
 /* Analyse une réponse écrite.
-   → { status:'ok', rank:'Q', suit:'H' } | { status:'ok', joker:true, color:'red'|null }
-   → status 'empty' | 'unknown' | 'needSuit' | 'needRank' | 'needColor' */
+   → { status:'ok', rank:'Q', suit:'H' }
+   → status 'empty' | 'unknown' | 'needSuit' | 'needRank' */
 function parseAnswer(input, needSuit) {
   const tk = tokenize(input);
   if (!tk.length) return { status: 'empty' };
-  if (tk.some(w => RANK_W[w] === 'JK')) {
-    let color = null;
-    for (const w of tk) {
-      if (RANK_W[w] === 'JK') continue;
-      if (COLOR_W[w]) color = COLOR_W[w];
-      else if (SUIT_W[w]) color = 'HD'.includes(SUIT_W[w]) ? 'red' : 'black';
-      else return { status: 'unknown' };
-    }
-    if (needSuit && !color) return { status: 'needColor', joker: true };
-    return { status: 'ok', joker: true, color };
-  }
   let rank = null, suit = null;
-  for (const w of tk) if (!RANK_W[w] && !SUIT_W[w] && !COLOR_W[w] && !compact(w)) return { status: 'unknown' };
+  for (const w of tk) if (!RANK_W[w] && !SUIT_W[w] && !compact(w)) return { status: 'unknown' };
   // 1) une hauteur + une enseigne dans deux mots différents
   for (let i = 0; i < tk.length && !suit; i++) {
     if (!RANK_W[tk[i]]) continue;
@@ -330,12 +322,10 @@ function parseAnswer(input, needSuit) {
 function compact(w) {
   if (RANK_W[w] || SUIT_W[w]) return null;
   const m = /^(.+?)([hdsc])$/.exec(w);
-  if (m && RANK_W[m[1]] && RANK_W[m[1]] !== 'JK') return { rank: RANK_W[m[1]], suit: SUIT_W[m[2]] };
+  if (m && RANK_W[m[1]]) return { rank: RANK_W[m[1]], suit: SUIT_W[m[2]] };
   return null;
 }
 function answerMatches(card, a, needSuit) {
-  if (card.joker) return !!a.joker && (!needSuit || a.color === card.c);
-  if (a.joker) return false;
   return a.rank === card.r && (!needSuit || a.suit === card.s);
 }
 
@@ -390,15 +380,14 @@ const VS = '︎';
 function fullDeck() {
   const d = [];
   for (const s of SUITS) for (const r of RANKS) d.push({ r, s, c: s === 'H' || s === 'D' ? 'red' : 'black' });
-  d.push({ r: 'JK', s: '', c: 'red', joker: true }, { r: 'JK', s: '', c: 'black', joker: true });
   return d;
 }
 function shuffle(a, rng) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function buildDeck(kind, seed) {
   const rng = mulberry32(seed); const all = fullDeck();
   if (kind === 'half') {
-    const R = shuffle(all.filter(c => !c.joker && c.c === 'red'), rng).slice(0, 13);
-    const B = shuffle(all.filter(c => !c.joker && c.c === 'black'), rng).slice(0, 13);
+    const R = shuffle(all.filter(c => c.c === 'red'), rng).slice(0, 13);
+    const B = shuffle(all.filter(c => c.c === 'black'), rng).slice(0, 13);
     return shuffle(R.concat(B), rng);
   }
   return shuffle(all, rng);
@@ -406,17 +395,11 @@ function buildDeck(kind, seed) {
 const faceLetter = r => ['J', 'Q', 'K'].includes(r) ? t('face.' + r) : r;
 const rankName = r => ['A', 'J', 'Q', 'K'].includes(r) ? t('rank.' + r) : r;
 const suitName = s => t('suit.' + s);
-const jokerName = c => c === 'red' ? t('card.jokerRed') : c === 'black' ? t('card.jokerBlack') : t('card.joker');
 function cardName(c) {
-  if (c.joker) return jokerName(c.c);
   const s = t('card.fmt', { r: rankName(c.r), s: suitName(c.s) });
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 function faceHTML(c) {
-  if (c.joker) {
-    const v = 'J<br>O<br>K<br>E<br>R';
-    return `<div class="idx tl jkx">${v}</div><div class="pip jk"><span class="star">★</span><em>JOKER</em></div><div class="idx br jkx">${v}</div>`;
-  }
   const sym = SYM[c.s] + VS, L = faceLetter(c.r), idx = `<span class="rk">${L}</span><span class="st">${sym}</span>`;
   const mid = ['J', 'Q', 'K'].includes(c.r) ? `<div class="pip court"><span class="cl">${L}</span><span class="cs">${sym}</span></div>`
     : `<div class="pip${c.r === 'A' ? ' ace' : ''}">${sym}</div>`;
@@ -430,7 +413,7 @@ function cardEl(c, up = true) {
 }
 
 /* ======================== ÉTAT SAUVEGARDÉ ======================== */
-const DEFAULT_SET = { lang: '', diff: 'normal', bg: 0, bgCustom: '#24305e', felt: 0, cards: 'classic', redLabel: '', blackLabel: '', redColor: '#d4263f', blackColor: '#24252e', master: 80, sfx: 80, music: 35 };
+const DEFAULT_SET = { lang: '', diff: 'normal', anim: 'normal', bg: 0, bgCustom: '#24305e', felt: 0, cards: 'classic', redLabel: '', blackLabel: '', redColor: '#d4263f', blackColor: '#24252e', master: 80, sfx: 80, music: 35 };
 const P = {
   player: store.get('m54_player', null),
   prog: store.get('m54_prog', null) || {},
@@ -448,6 +431,9 @@ if (!DIFFS.includes(P.set.diff)) P.set.diff = 'normal';
 LANG = P.set.lang;
 function classicProg(d) { const k = bkey(d, 'classic'); if (!P.prog[k]) P.prog[k] = { seed: randSeed(), packs: 0, best: 0, pos: 0 }; return P.prog[k]; }
 DIFFS.forEach(classicProg);
+if (!['pro', 'normal', 'real'].includes(P.set.anim)) P.set.anim = 'normal';
+// passage de 54 à 52 cartes : la partie classique en cours repart de la 1re carte
+if (!P.set.v52) { DIFFS.forEach(d => { const c = classicProg(d); c.pos = 0; c.best = Math.min(c.best, 52); }); P.set.v52 = 1; }
 function saveLocal() { store.set('m54_player', P.player); store.set('m54_prog', P.prog); store.set('m54_set', P.set); }
 
 /* Scores à envoyer : { "normal.classic": {v1:paquets, v2:carte, seed}, "hard.infinite": {v1}, … } */
@@ -480,8 +466,8 @@ function better(board, n, o) {
 function validScore(board, s) {
   const m = board.split('.')[1];
   if (m === 'classic') return s.v1 >= 0 && s.v2 >= 0 && s.v2 <= 54;
-  if (m === 'half') return s.v1 >= 3000;
-  if (m === 'full') return s.v1 >= 6000;
+  if (m === 'half') return s.v1 >= 2000;
+  if (m === 'full') return s.v1 >= 4000;
   return s.v1 > 0;
 }
 
@@ -714,7 +700,7 @@ const deckBox = $('#deckBox'), pileBox = $('#pileBox'), ansIn = $('#ansIn');
 const curDiff = () => G ? G.diff : P.set.diff;
 
 function newSession(mode, diff) {
-  const g = { mode, diff, key: bkey(diff, mode), packs: 0, best: 0, pos: 0, seen: 0, seed: randSeed(), lives: 3, started: false, t0: 0, final: 0, ended: false, busy: false, wrong: null };
+  const g = { mode, diff, key: bkey(diff, mode), packs: 0, best: 0, pos: 0, seen: 0, seed: randSeed(), lives: 3, started: false, t0: 0, final: 0, ended: false, busy: false, pending: null, lastMiss: null };
   if (mode === 'classic') { const c = classicProg(diff); Object.assign(g, { seed: c.seed, packs: c.packs, best: c.best, pos: c.pos || 0 }); }
   g.deck = buildDeck(mode === 'half' ? 'half' : 'full', g.seed);
   if (g.pos >= g.deck.length) g.pos = 0;
@@ -724,6 +710,7 @@ function newSession(mode, diff) {
 }
 function startMode(mode) {
   closeAllModals(); Sound.init();
+  stopAnims(false); hideCaption();
   if (G) G.ended = true;
   G = newSession(mode, P.set.diff);
   $('#menu').classList.add('off'); $('#diffScreen').classList.add('off');
@@ -739,9 +726,47 @@ function persist() {
   saveLocal(); queueSync();
 }
 
+/* =====================================================================
+   NIVEAUX D'ANIMATION
+   pro    : rien n'est animé, tout est instantané (on peut « spammer »)
+   normal : animations rapides ; une nouvelle réponse les coupe net
+   real   : animations lentes et complètes ; on attend la fin
+   ===================================================================== */
+const ANIM = {
+  pro:    { fly: 0,   miss: 0,    stagger: 0,  back: 0,   maxBack: 0,  pack: 0,    wait: false },
+  normal: { fly: 380, miss: 1000, stagger: 38, back: 340, maxBack: 12, pack: 1200, wait: false },
+  real:   { fly: 720, miss: 1700, stagger: 70, back: 560, maxBack: 26, pack: 2000, wait: true },
+};
+const AN = () => ANIM[P.set.anim] || ANIM.normal;
+let animTimers = [], skipping = false;
+function later(ms, fn) { const id = setTimeout(() => { animTimers = animTimers.filter(x => x !== id); fn(); }, ms); animTimers.push(id); }
+/* garde un état visuel pendant ms puis exécute fn (annulable / accélérable) */
+function hold(ms, fn) {
+  if (skipping || ms <= 0) { fn(); return; }
+  const S0 = G; G.busy = true;
+  const done = () => { if (G !== S0) return; if (G.pending === done) G.pending = null; G.busy = false; fn(); };
+  G.pending = done;
+  later(ms, () => { if (G === S0 && G.pending === done) done(); });
+}
+/* coupe toutes les animations ; finish = va directement à l'état final */
+function stopAnims(finish) {
+  skipping = true;
+  animTimers.forEach(clearTimeout); animTimers = [];
+  $$('#fly .flyer').forEach(e => e.remove());
+  while (finish && G && G.pending) { const f = G.pending; G.pending = null; f(); }
+  if (G) { G.pending = null; if (!G.ended) G.busy = false; }
+  skipping = false;
+}
+/* prêt à recevoir une réponse ? (en Normal/Pro, coupe l'animation en cours) */
+function ready() {
+  if (!G || G.ended) return false;
+  if (G.busy) { if (AN().wait) return false; stopAnims(true); }
+  return !!G && !G.ended && G.pos < G.deck.length;
+}
+
 /* --- Normal : Rouge / Noir --- */
 function guess(color) {
-  if (!G || G.busy || G.ended || G.diff !== 'normal') return;
+  if (!G || G.diff !== 'normal' || !ready()) return;
   const ok = G.deck[G.pos].c === color;
   btnFx(color, ok);
   reveal(ok);
@@ -754,13 +779,13 @@ function submitAnswer(forcedSuit) {
   if (forcedSuit) {
     a = parseAnswer(ansIn.value, false);
     if (a.status !== 'ok') return ansError(t('ans.tapSuit'));
-    if (a.joker) a.color = 'HD'.includes(forcedSuit) ? 'red' : 'black'; else a.suit = forcedSuit;
+    a.suit = forcedSuit;
   } else {
     a = parseAnswer(ansIn.value, needSuit);
     if (a.status === 'empty') return ansError('');
     if (a.status !== 'ok') return ansError(previewText(a));
   }
-  if (G.busy) return;
+  if (!ready()) return;
   const ok = answerMatches(G.deck[G.pos], a, needSuit);
   ansIn.value = ''; updatePreview();
   ansFx(ok);
@@ -769,15 +794,14 @@ function submitAnswer(forcedSuit) {
 function previewText(a) {
   const needSuit = curDiff() === 'expert';
   switch (a.status) {
-    case 'ok': return a.joker ? jokerName(needSuit ? a.color : null) : needSuit ? cardName({ r: a.rank, s: a.suit }) : rankName(a.rank);
+    case 'ok': return needSuit ? cardName({ r: a.rank, s: a.suit }) : rankName(a.rank);
     case 'needSuit': return t('ans.needSuit', { x: rankName(a.rank) });
     case 'needRank': return t('ans.needRank', { x: SYM[a.suit] + ' ' + suitName(a.suit) });
-    case 'needColor': return t('ans.needColor');
     case 'unknown': return t('ans.unknown');
     default: return '';
   }
 }
-const KNOWN_WORDS = Object.keys(RANK_W).concat(Object.keys(SUIT_W), Object.keys(COLOR_W));
+const KNOWN_WORDS = Object.keys(RANK_W).concat(Object.keys(SUIT_W));
 function typingWord(v) { // dernier mot en cours de frappe (début d'un mot connu) ?
   const tk = tokenize(v), last = tk[tk.length - 1];
   return !!last && !/\s$/.test(v) && KNOWN_WORDS.some(w => w.length > last.length && w.startsWith(last));
@@ -797,64 +821,80 @@ function ansError(msg) {
 function ansFx(ok) {
   const bar = $('#answerBar');
   bar.classList.remove('ok', 'ko'); void bar.offsetWidth; bar.classList.add(ok ? 'ok' : 'ko');
-  setTimeout(() => bar.classList.remove('ok', 'ko'), 650);
+  setTimeout(() => bar.classList.remove('ok', 'ko'), P.set.anim === 'pro' ? 300 : 650);
 }
 
-/* --- révélation de la carte (commun à toutes les difficultés) --- */
-async function reveal(ok) {
-  const S0 = G; Sound.init();
+/* --- révélation de la carte : l'état du jeu change tout de suite,
+       les animations ne sont que de l'affichage --- */
+function reveal(ok) {
+  const S0 = G, A = AN(); Sound.init();
   if (isChrono(G.mode) && !G.started) { G.started = true; G.t0 = performance.now(); }
-  G.busy = true;
-  const card = G.deck[G.pos], fast = isChrono(G.mode);
-  hideCaption();
-  renderDeck(G.deck.length - G.pos - 1);
+  const card = G.deck[G.pos];
+  hideCaption(); G.lastMiss = null;
   Sound.flip();
-  await flyCard(card, deckBox, pileBox, { dur: fast ? 300 : 460 });
-  if (G !== S0 || G.ended) return;
 
   if (ok) {
     G.pos++; G.best = Math.max(G.best, G.pos); G.seen = Math.max(G.seen, G.pos);
-    Sound.correct(); renderPile(); renderHud();
-    if (G.pos >= G.deck.length) { persist(); await packComplete(S0); if (G !== S0 || G.ended) return; }
-    persist();
-  } else {
-    const seenBefore = G.pos < G.seen;
-    G.wrong = G.pos; G.seen = Math.max(G.seen, G.pos + 1);
-    Sound.wrong(); renderPile(); ringFlash();
-    let extra = '';
-    if (G.mode === 'infinite') {
-      if (seenBefore) { G.lives--; Sound.lose(); renderHud(true); extra = `<small>${t('cap.seen')}</small>`; }
-      else extra = `<small>${t('cap.unseen')}</small>`;
-    }
-    showCaption(esc(t('cap.miss', { x: cardName(card) })) + extra);
-    await wait(fast ? 800 : (G.diff === 'normal' ? 1300 : 1700));
-    if (G !== S0 || G.ended) return;
-    if (G.mode === 'infinite' && G.lives <= 0) { hideCaption(); return endGame('lives'); }
-    const n = G.pos + 1; G.wrong = null; G.pos = 0;
-    hideCaption();
-    await returnCards(n, S0);
-    if (G !== S0 || G.ended) return;
-    renderAll(); persist();
+    const done = G.pos >= G.deck.length;
+    if (done && isTime(G.mode)) G.final = performance.now() - G.t0;   // temps arrêté à la dernière réponse
+    Sound.correct(); persist();
+    renderDeck(); renderHud();
+    const finish = () => { renderPile(); if (done) packComplete(S0); };
+    if (A.fly) { flyCard(card, deckBox, pileBox, A.fly); hold(A.fly, finish); } else finish();
+    return;
   }
-  G.busy = false;
+
+  // --- erreur ---
+  const seenBefore = G.pos < G.seen, n = G.pos + 1, shown = G.deck.slice(0, G.pos);
+  G.seen = Math.max(G.seen, G.pos + 1);
+  let extra = '';
+  if (G.mode === 'infinite') {
+    if (seenBefore) { G.lives--; Sound.lose(); extra = `<small>${t('cap.seen')}</small>`; }
+    else extra = `<small>${t('cap.unseen')}</small>`;
+  }
+  const dead = G.mode === 'infinite' && G.lives <= 0;
+  G.pos = 0; persist();
+  Sound.wrong(); ringFlash();
+  showCaption(esc(t('cap.miss', { x: cardName(card) })) + extra);
+  renderHud(G.mode === 'infinite' && seenBefore);
+
+  if (!A.fly) { // Pro : instantané, la carte ratée reste visible jusqu'à la prochaine réponse
+    G.lastMiss = card; renderDeck(); renderPile();
+    if (dead) endGame('lives');
+    return;
+  }
+  renderDeck(G.deck.length - n);
+  flyCard(card, deckBox, pileBox, A.fly);
+  hold(A.fly, () => {
+    renderPileList(shown.concat([card]), true);
+    hold(A.miss, () => {
+      hideCaption();
+      if (dead) return endGame('lives');
+      hold(returnVisual(shown.concat([card])), () => renderAll());
+    });
+  });
 }
 
-async function packComplete(S0) {
-  G.packs++;
-  Sound.win(); confetti(); banner(t(G.mode === 'half' ? 'ban.half' : 'ban.full'));
-  if (isTime(G.mode)) { G.final = performance.now() - G.t0; renderHud(); await wait(1100); if (G === S0) endGame('done'); return; }
+function packComplete(S0) {
+  const A = AN();
+  G.packs++; persist();
+  Sound.win(); if (A.fly) confetti(); banner(t(G.mode === 'half' ? 'ban.half' : 'ban.full'));
   renderHud();
-  await wait(1400); if (G !== S0 || G.ended) return;
-  await returnCards(G.deck.length, S0); if (G !== S0 || G.ended) return;
+  if (isTime(G.mode)) { hold(A.fly ? 1000 : 250, () => endGame('done')); return; }
+  const old = G.deck;
   G.seed = randSeed(); G.deck = buildDeck('full', G.seed); G.pos = 0; G.best = 0; G.seen = 0;
   if (G.mode === 'infinite') { G.lives = Math.min(5, G.lives + 1); toast(t('toast.life')); }
   else if (G.mode === 'classic') toast(t('toast.newpack'));
-  renderAll();
+  persist(); renderHud();
+  if (!A.pack) { renderAll(); return; }
+  renderDeck(0); renderPileList(old, false);
+  hold(A.pack, () => hold(returnVisual(old), () => renderAll()));
 }
 
-function liveScore(g) { return g.packs * 54 + g.best; }
+function liveScore(g) { return g.packs * 52 + g.best; }
 function endGame(reason) {
   if (!G || G.ended) return;
+  animTimers.forEach(clearTimeout); animTimers = []; G.pending = null;
   const g = G; g.ended = true; g.busy = true;
   const m = g.mode, k = g.key; let score, label, rec = false;
   if (m === 'infinite' || m === 'c15') {
@@ -894,6 +934,7 @@ async function goHome() {
       if (!(await ask(t('ask.abandon.t'), t('ask.abandon.x'), t('ask.abandon.ok')))) return;
     }
   }
+  stopAnims(false); hideCaption();
   if (G) G.ended = true;
   G = null; renderAll(); showMenu();
 }
@@ -921,11 +962,11 @@ function setInputMode() {
   ansIn.placeholder = t(d === 'expert' ? 'ans.ph.expert' : 'ans.ph.hard');
 }
 function renderDeck(rem) {
-  if (rem == null) rem = G ? G.deck.length - G.pos - (G.wrong != null ? 1 : 0) : 54;
+  if (rem == null) rem = G ? G.deck.length - G.pos : 52;
   deckBox.innerHTML = '';
   if (rem <= 0) { deckBox.innerHTML = `<div class="ghost">${t('ghost.empty')}</div>`; }
   else {
-    const layers = Math.max(1, Math.ceil(rem / 54 * 6));
+    const layers = Math.max(1, Math.ceil(rem / 52 * 6));
     for (let i = 0; i < layers; i++) {
       const el = cardEl(null, false); el.classList.add('static');
       const o = (layers - 1 - i) * 1.6; el.style.transform = `translate(${o}px,${o}px)`;
@@ -937,23 +978,25 @@ function renderDeck(rem) {
 }
 const tilt = i => (((i * 37) % 9) - 4) * 1.4;
 function renderPile() {
+  if (G && G.pos === 0 && G.lastMiss) return renderPileList([G.lastMiss], true);
+  renderPileList(G ? G.deck.slice(0, G.pos) : [], false);
+}
+function renderPileList(list, wrongTop) {
   pileBox.innerHTML = '';
-  const shown = G ? G.deck.slice(0, G.pos) : [];
-  const list = G && G.wrong != null ? shown.concat([G.deck[G.wrong]]) : shown;
   if (!list.length) pileBox.innerHTML = `<div class="ghost">${t('ghost.pile')}</div>`;
   const start = Math.max(0, list.length - 3);
   for (let i = start; i < list.length; i++) {
     const el = cardEl(list[i], true); el.classList.add('static');
     const top = i === list.length - 1;
     if (!top) el.style.transform = `rotate(${tilt(i)}deg) translate(${tilt(i + 3)}px,${tilt(i + 1) / 2}px)`;
-    if (top && G.wrong != null) el.classList.add('wrong');
+    if (top && wrongTop) el.classList.add('wrong');
     pileBox.appendChild(el);
   }
-  $('#pileCount').textContent = shown.length;
+  $('#pileCount').textContent = list.length - (wrongTop ? 1 : 0);
 }
 const RING_C = 276.46;
 function renderHud(lifeHit) {
-  const g = G, len = g ? g.deck.length : 54, pos = g ? g.pos : 0, best = g ? g.best : 0;
+  const g = G, len = g ? g.deck.length : 52, pos = g ? g.pos : 0, best = g ? g.best : 0;
   $('#hudMode').textContent = g ? `${modeLabel(g.mode)} · ${t('diff.' + g.diff)}` : t('diff.' + P.set.diff);
   $('#hudPos').textContent = pos; $('#hudLen').textContent = '/' + len;
   $('#ringProg').style.strokeDashoffset = RING_C * (1 - pos / len);
@@ -997,30 +1040,42 @@ function showCaption(html) { const c = $('#caption'); c.innerHTML = html; c.clas
 function hideCaption() { $('#caption').classList.remove('show'); }
 
 /* ---- animations ---- */
-function flyCard(card, fromEl, toEl, { startUp = false, endUp = true, dur = 460, arc = -50 } = {}) {
+function flyCard(card, fromEl, toEl, dur, back = false) {
+  if (skipping || !dur) return;
+  const real = P.set.anim === 'real';
   const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
   const el = cardEl(card, false); el.classList.add('flyer');
   Object.assign(el.style, { left: a.left + 'px', top: a.top + 'px', width: a.width + 'px', height: a.height + 'px' });
   $('#fly').appendChild(el);
   const dx = b.left - a.left, dy = b.top - a.top, inner = el.firstElementChild;
-  const r0 = startUp ? 180 : 0, r1 = endUp ? 180 : 0;
+  const r0 = back ? 180 : 0, r1 = back ? 0 : 180, arc = back ? (real ? -60 : -30) : (real ? -110 : -50), sc = real ? 1.22 : 1.1;
   inner.style.transition = 'none'; inner.style.transform = `rotateY(${r0}deg)`;
-  if (!el.animate) { el.remove(); return wait(dur); }
-  const mv = el.animate([
-    { transform: 'translate(0,0) rotate(0deg) scale(1)' },
-    { transform: `translate(${dx * .5}px,${dy * .5 + arc}px) rotate(${dx > 0 ? -7 : 7}deg) scale(1.12)` },
-    { transform: `translate(${dx}px,${dy}px) rotate(0deg) scale(1)` }], { duration: dur, easing: 'cubic-bezier(.3,.7,.25,1)' });
-  inner.animate([{ transform: `rotateY(${r0}deg)` }, { transform: `rotateY(${r1}deg)` }], { duration: dur * .85, easing: 'ease-in-out', fill: 'forwards' });
-  return mv.finished.then(() => el.remove(), () => el.remove());
+  if (!el.animate) { el.remove(); return; }
+  const frames = real
+    ? [{ transform: 'translate(0,0) rotate(0deg) scale(1)' },
+       { transform: `translate(${dx * .15}px,${arc * .7}px) rotate(${dx > 0 ? -4 : 4}deg) scale(${sc})`, offset: .25 },
+       { transform: `translate(${dx * .6}px,${dy * .6 + arc}px) rotate(${dx > 0 ? -10 : 10}deg) scale(${sc})`, offset: .65 },
+       { transform: `translate(${dx}px,${dy}px) rotate(0deg) scale(1)` }]
+    : [{ transform: 'translate(0,0) rotate(0deg) scale(1)' },
+       { transform: `translate(${dx * .5}px,${dy * .5 + arc}px) rotate(${dx > 0 ? -7 : 7}deg) scale(${sc})` },
+       { transform: `translate(${dx}px,${dy}px) rotate(0deg) scale(1)` }];
+  el.animate(frames, { duration: dur, easing: real ? 'cubic-bezier(.45,.05,.25,1)' : 'cubic-bezier(.3,.7,.25,1)', fill: 'forwards' })
+    .finished.then(() => el.remove(), () => el.remove());
+  inner.animate([{ transform: `rotateY(${r0}deg)` }, { transform: `rotateY(${r1}deg)` }],
+    { duration: dur * (real ? .7 : .85), delay: real ? dur * .15 : 0, easing: 'ease-in-out', fill: 'forwards' });
 }
-async function returnCards(n, S0) {
-  const cards = G.deck.slice(0, n), k = Math.min(cards.length, 12);
+/* les cartes de la pile repartent dans le paquet ; renvoie la durée */
+function returnVisual(list) {
+  const A = AN(), n = list.length, k = Math.min(n, A.maxBack);
   pileBox.innerHTML = '<div class="ghost"></div>'; $('#pileCount').textContent = '0';
-  if (!k) return;
+  if (!k || skipping) return 0;
   Sound.shuffle();
-  const base = G.deck.length - n, fly = cards.slice(-k).reverse(); let landed = 0;
-  await Promise.all(fly.map((c, i) => wait(i * 42).then(() => flyCard(c, pileBox, deckBox, { startUp: true, endUp: false, dur: 380, arc: -30 }))
-    .then(() => { landed++; if (G === S0) renderDeck(base + Math.round(n * landed / k)); })));
+  const base = G.deck.length - n, fly = list.slice(-k).reverse();
+  fly.forEach((c, i) => later(i * A.stagger, () => {
+    flyCard(c, pileBox, deckBox, A.back, true);
+    later(A.back, () => renderDeck(base + Math.round(n * (i + 1) / k)));
+  }));
+  return (k - 1) * A.stagger + A.back + 40;
 }
 function confetti() {
   const r = pileBox.getBoundingClientRect(), cx = innerWidth / 2, cy = r.top + r.height / 2;
@@ -1036,7 +1091,7 @@ function confetti() {
       { duration: 1600 + Math.random() * 700, easing: 'cubic-bezier(.2,.6,.4,1)' }).finished.then(() => d.remove(), () => d.remove());
   }
 }
-let bannerT; function banner(s) { const b = $('#banner'); b.textContent = s; b.classList.add('show'); clearTimeout(bannerT); bannerT = setTimeout(() => b.classList.remove('show'), 1500); }
+let bannerT; function banner(s) { const b = $('#banner'); b.textContent = s; b.classList.add('show'); clearTimeout(bannerT); bannerT = setTimeout(() => b.classList.remove('show'), P.set.anim === 'pro' ? 700 : 1500); }
 let toastT; function toast(s) { const el = $('#toast'); el.textContent = s; el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 2400); }
 
 /* ---- taille des cartes selon l'écran (et clavier du téléphone) ---- */
@@ -1186,12 +1241,24 @@ function applyLang() {
   $('#exNormal').innerHTML = `<span class="kchip red">${esc(P.set.redLabel || t('btn.red'))}</span><span class="kchip black">${esc(P.set.blackLabel || t('btn.black'))}</span>`;
   $('#exHard').innerHTML = t('diff.hard.ex').split('|').map(x => `<span class="kchip">${esc(x)}</span>`).join('');
   $('#exExpert').innerHTML = t('diff.expert.ex').split('|').map(x => `<span class="kchip">${esc(x)}</span>`).join('');
+  renderAnims();
   const kr = t('btn.red').charAt(0).toUpperCase(), kb = t('btn.black').charAt(0).toUpperCase();
   $('#kbdHint').textContent = `← ${kr}   ${kb} →`;
   buildWordTable();
   buildSettings(); applySettings(); renderMenu(); renderAll(); renderNet(); renderPlayer(); updatePreview();
   if ($('#boardModal').classList.contains('open')) openBoard(boardFull, boardTab, boardDiff);
 }
+const ANIM_ICON = { pro: '⚡', normal: '▶', real: '🂡' };
+function renderAnims() {
+  $$('[data-anims]').forEach(box => {
+    const mini = box.classList.contains('mini');
+    box.innerHTML = (mini ? `<span class="alabel">${t('set.anim')}</span>` : '') + ['pro', 'normal', 'real'].map(k =>
+      `<button data-anim="${k}" class="${k === P.set.anim ? 'on' : ''}" title="${esc(t('anim.' + k + '.d'))}"><b><i>${ANIM_ICON[k]}</i>${t('anim.' + k)}</b>${mini ? '' : `<span>${t('anim.' + k + '.d')}</span>`}</button>`).join('');
+  });
+  document.body.classList.toggle('anim-pro', P.set.anim === 'pro');
+  document.body.classList.toggle('anim-real', P.set.anim === 'real');
+}
+function setAnim(k) { stopAnims(true); P.set.anim = k; saveLocal(); renderAnims(); }
 function setLang(l) { if (!LANGS.includes(l)) return; P.set.lang = l; saveLocal(); applyLang(); }
 function buildWordTable() {
   const row = (label, words) => `<div class="wrow"><b>${label}</b><span>${Array.isArray(words) ? words.map(w => `<code>${esc(w)}</code>`).join(' ') : esc(words)}</span></div>`;
@@ -1200,9 +1267,7 @@ function buildWordTable() {
   h += row(rankName('A'), W('A'));
   h += row(t('w.numbers'), t('w.numbers.d'));
   ['J', 'Q', 'K'].forEach(k => { h += row(rankName(k), W(k)); });
-  h += row(t('card.joker'), W('JK'));
   SUITS.forEach(s => { h += row(`<span class="${'HD'.includes(s) ? 'sr' : ''}">${SYM[s]}${VS}</span> ${esc(suitName(s))}`, WORDS.suit[s].split(' ').filter(w => !SUIT_SYMS.includes(w))); });
-  h += row(t('w.color'), WORDS.color.red.split(' ').slice(0, 6).concat(['/'], WORDS.color.black.split(' ').slice(0, 6)));
   $('#wordTable').innerHTML = h;
 }
 
@@ -1273,7 +1338,7 @@ function renderMenu() {
 function buildFans() {
   $$('.fan').forEach(fan => {
     fan.innerHTML = '';
-    [[{ r: 'A', s: 'H', c: 'red' }, -16], [{ r: 'JK', c: 'black', joker: true }, 0], [{ r: 'A', s: 'S', c: 'black' }, 16]].forEach(([c, a]) => {
+    [[{ r: 'A', s: 'H', c: 'red' }, -16], [{ r: 'K', s: 'S', c: 'black' }, 0], [{ r: 'Q', s: 'D', c: 'red' }, 16]].forEach(([c, a]) => {
       const el = cardEl(c, true); el.classList.add('static'); el.style.transform = `rotate(${a}deg)`; fan.appendChild(el);
     });
   });
@@ -1300,6 +1365,7 @@ document.addEventListener('click', e => {
   if (e.target.classList.contains('modal') && e.target.hasAttribute('data-closable')) e.target.classList.remove('open');
   if (e.target.id === 'btnTop100') openBoard(true, boardTab, boardDiff);
   const l = e.target.closest('[data-lang]'); if (l) { Sound.init(); Sound.click(); setLang(l.dataset.lang); }
+  const an = e.target.closest('[data-anim]'); if (an) { Sound.init(); Sound.click(); setAnim(an.dataset.anim); }
 });
 $('#boardTabs').addEventListener('click', e => { const b = e.target.closest('[data-b]'); if (b) { boardTab = b.dataset.b; Sound.click(); loadBoard(); } });
 $('#boardDiff').addEventListener('click', e => { const b = e.target.closest('[data-bd]'); if (b) { boardDiff = b.dataset.bd; Sound.click(); loadBoard(); } });

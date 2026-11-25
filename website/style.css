@@ -469,3 +469,36 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radiu
 #toast.show{transform:translate(-50%,0)}
 #toast{top:calc(env(safe-area-inset-top) + 118px)}
 @media (max-width:600px){#toast{top:calc(env(safe-area-inset-top) + 72px)}}
+
+/* =====================================================================
+   v4 — niveaux d'animation, règles
+   ===================================================================== */
+.anims{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.anims button{display:flex;flex-direction:column;gap:6px;text-align:left;padding:12px;border-radius:14px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);transition:.2s}
+.anims button:hover{background:rgba(255,255,255,.1)}
+.anims button b{display:flex;align-items:center;gap:7px;font-size:.92rem}
+.anims button b i{font-style:normal;font-size:1rem;color:var(--gold)}
+.anims button span{font-size:.74rem;color:var(--muted);line-height:1.4}
+.anims button.on{background:rgba(244,207,107,.14);box-shadow:inset 0 0 0 2px var(--gold)}
+.anims.mini{display:inline-flex;align-items:center;gap:4px;padding:4px;border-radius:999px;background:rgba(0,0,0,.28);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.anims.mini .alabel{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 6px 0 10px}
+.anims.mini button{flex-direction:row;padding:6px 12px;border-radius:999px;background:none;box-shadow:none}
+.anims.mini button b{font-size:.8rem;font-weight:600;color:var(--muted)}
+.anims.mini button.on{background:var(--gold)} .anims.mini button.on b,.anims.mini button.on b i{color:#2a1d00}
+.rules h5{margin:14px 0 4px;font-size:.88rem;color:var(--ink)}
+.rules ol{margin:4px 0 8px;padding-left:20px} .rules li{margin:3px 0}
+.rules p{margin:4px 0 8px}
+/* Pro : aucune transition, retours visuels très courts */
+.anim-pro .card .inner,.anim-pro .ring .prog,.anim-pro .ring .best{transition:none!important}
+.anim-pro .card.wrong{animation:none}
+.anim-pro .answer.ko .ans-field{animation:none}
+.anim-pro .choice{transition:none}
+.anim-pro #banner{transition-duration:.12s}
+/* Réaliste : ombres plus marquées pendant le vol */
+.anim-real .flyer{filter:drop-shadow(0 26px 22px rgba(0,0,0,.45))}
+@media (max-width:600px){
+  .anims{grid-template-columns:1fr}
+  .anims button{flex-direction:row;align-items:center;gap:12px}
+  .anims button b{flex:none;min-width:88px}
+  .anims.mini .alabel{display:none}
+}

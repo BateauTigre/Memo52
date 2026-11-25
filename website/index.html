@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#0b0f22">
-<meta name="description" content="Mémo 54 — retiens l'ordre d'un paquet de 54 cartes.">
-<title>Mémo 54</title>
+<meta name="description" content="Mémo 52 — retiens l'ordre d'un paquet de 52 cartes.">
+<title>Mémo 52</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@300;400;600;800&family=Playfair+Display:wght@700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -41,14 +41,14 @@
         <div class="slot" id="deckSlot">
           <div class="cardbox" id="deckBox"></div>
         </div>
-        <div class="zone-label"><span data-i18n="zone.deck">Paquet</span> · <b id="deckCount">54</b></div>
+        <div class="zone-label"><span data-i18n="zone.deck">Paquet</span> · <b id="deckCount">52</b></div>
       </div>
 
       <aside class="hud">
-        <div class="chip" id="hudMode">Mémo 54</div>
+        <div class="chip" id="hudMode">Mémo 52</div>
         <div class="ring" id="ring">
           <svg viewBox="0 0 100 100"><circle class="trk" cx="50" cy="50" r="44"/><circle class="best" id="ringBest" cx="50" cy="50" r="44" style="stroke-dashoffset:276.46"/><circle class="prog" id="ringProg" cx="50" cy="50" r="44" style="stroke-dashoffset:276.46"/></svg>
-          <div class="ring-txt"><b id="hudPos">0</b><small id="hudLen">/54</small></div>
+          <div class="ring-txt"><b id="hudPos">0</b><small id="hudLen">/52</small></div>
         </div>
         <div class="stat"><span data-i18n="hud.record">Record</span><b id="hudBest">0</b></div>
         <div class="stat" id="hudPacksWrap"><span data-i18n="hud.packs">Paquets</span><b id="hudPacks">0</b></div>
@@ -99,7 +99,7 @@
     <div class="menu-in">
       <div class="logo">
         <div class="fan"></div>
-        <h1>MÉMO 54</h1>
+        <h1>MÉMO 52</h1>
         <p data-i18n="diff.title">Choisis ta difficulté</p>
       </div>
       <div class="diffs">
@@ -131,10 +131,11 @@
     <div class="menu-in">
       <div class="logo">
         <div class="fan"></div>
-        <h1>MÉMO 54</h1>
+        <h1>MÉMO 52</h1>
         <p data-i18n="menu.tag">Retiens l'ordre du paquet. Une erreur, et tout recommence.</p>
       </div>
       <button class="diff-pill" id="btnDiff"><span class="dlvl" id="diffLvl"></span><b id="diffName">Normal</b><span class="chg" data-i18n="diff.change">Changer</span></button>
+      <div class="anims mini" data-anims></div>
       <div class="hello" id="hello"></div>
       <div class="modes">
         <button class="mode" data-start="classic" style="--mc:linear-gradient(180deg,#2f8f5b,#16613b)">
@@ -220,6 +221,7 @@
       </nav>
       <div class="pbody">
         <div class="pane on" data-p="look">
+          <h4 data-i18n="set.anim">Animations</h4><div class="anims" data-anims></div>
           <h4 data-i18n="set.bg">Fond du site</h4><div class="swatches" id="swBg"></div>
           <h4 data-i18n="set.felt">Tapis de jeu</h4><div class="swatches" id="swFelt"></div>
           <h4 data-i18n="set.cards">Style des cartes</h4><div class="cstyles" id="swCards"></div>

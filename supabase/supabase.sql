@@ -1,5 +1,5 @@
 -- =====================================================================
---  MÉMO 54 — base de données du classement (Supabase, offre gratuite)
+--  MÉMO 52 — base de données du classement (Supabase, offre gratuite)
 --  Version 2 : classements séparés par difficulté (Normal / Difficile / Expert)
 --
 --  À coller tel quel dans Supabase > SQL Editor > New query > Run.
@@ -125,9 +125,9 @@ begin
     if v_mode = 'classic' then
       continue when n1 < 0 or n1 > 100000 or n2 is null or n2 < 0 or n2 > 54;
     elsif v_mode = 'half' then
-      continue when n1 < 3000;
+      continue when n1 < 2000;
     elsif v_mode = 'full' then
-      continue when n1 < 6000;
+      continue when n1 < 4000;
     else
       continue when n1 <= 0 or n1 > 10000000;
       n2 := null;
