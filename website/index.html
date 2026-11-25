@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#0b0f22">
+<meta name="description" content="Mémo 54 — retiens l'ordre d'un paquet de 54 cartes.">
+<title>Mémo 54</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@300;400;600;800&family=Playfair+Display:wght@700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app" class="cs-classic">
+
+  <!-- ============ TABLE DE JEU ============ -->
+  <div class="table" id="table">
+    <div class="row top">
+      <button class="pill score-btn" id="btnScore" data-i18n-aria="top.board">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
+        <span class="lbl"><span class="long" data-i18n="top.board">Classement</span><span class="short" data-i18n="board.top10">Top 10</span></span>
+      </button>
+      <div class="icons">
+        <button class="ibtn" id="btnHome" data-i18n-aria="aria.menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button class="ibtn" id="btnSettings" data-i18n-aria="aria.settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+      <button class="pill reg-btn" id="btnRegister" data-i18n-aria="aria.profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        <span class="lbl" id="regLabel">—</span>
+        <span class="dot" id="regDot"></span>
+      </button>
+    </div>
+
+    <div class="row board">
+      <div class="zone deck">
+        <div class="slot" id="deckSlot">
+          <div class="cardbox" id="deckBox"></div>
+        </div>
+        <div class="zone-label"><span data-i18n="zone.deck">Paquet</span> · <b id="deckCount">54</b></div>
+      </div>
+
+      <aside class="hud">
+        <div class="chip" id="hudMode">Mémo 54</div>
+        <div class="ring" id="ring">
+          <svg viewBox="0 0 100 100"><circle class="trk" cx="50" cy="50" r="44"/><circle class="best" id="ringBest" cx="50" cy="50" r="44" style="stroke-dashoffset:276.46"/><circle class="prog" id="ringProg" cx="50" cy="50" r="44" style="stroke-dashoffset:276.46"/></svg>
+          <div class="ring-txt"><b id="hudPos">0</b><small id="hudLen">/54</small></div>
+        </div>
+        <div class="stat"><span data-i18n="hud.record">Record</span><b id="hudBest">0</b></div>
+        <div class="stat" id="hudPacksWrap"><span data-i18n="hud.packs">Paquets</span><b id="hudPacks">0</b></div>
+        <div class="stat hide" id="hudLivesWrap"><span data-i18n="hud.lives">Vies</span><div class="hearts" id="hudLives"></div></div>
+        <div class="stat timer hide" id="hudTimerWrap"><span id="hudTimerLbl">Temps</span><b id="hudTimer">00:00.00</b></div>
+      </aside>
+
+      <div class="zone pile">
+        <div class="slot" id="pileSlot">
+          <div class="cardbox" id="pileBox"></div>
+          <div class="caption" id="caption"></div>
+        </div>
+        <div class="zone-label"><span data-i18n="zone.pile">Retournées</span> · <b id="pileCount">0</b></div>
+      </div>
+    </div>
+
+    <!-- Mode Normal : Rouge / Noir -->
+    <div class="row bottom" id="rowChoice">
+      <button class="choice" id="btnRed">
+        <span class="wm"><span>♥&#xFE0E;</span><span>♦&#xFE0E;</span></span>
+        <span class="lbl" id="lblRed">Rouge</span>
+      </button>
+      <div class="mid"><span class="or" data-i18n="or">ou</span><span class="kbd" id="kbdHint">← →</span></div>
+      <button class="choice" id="btnBlack">
+        <span class="wm"><span>♠&#xFE0E;</span><span>♣&#xFE0E;</span></span>
+        <span class="lbl" id="lblBlack">Noir</span>
+      </button>
+    </div>
+
+    <!-- Modes Difficile / Expert : réponse écrite -->
+    <form class="answer hide" id="answerBar" autocomplete="off" novalidate>
+      <label class="ans-field" id="ansField">
+        <input id="ansIn" type="text" maxlength="40" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send">
+        <span class="ans-prev" id="ansPrev"></span>
+      </label>
+      <div class="suit-btns" id="suitBtns">
+        <button type="button" class="sbtn red" data-suit="H">♥&#xFE0E;</button>
+        <button type="button" class="sbtn red" data-suit="D">♦&#xFE0E;</button>
+        <button type="button" class="sbtn" data-suit="S">♠&#xFE0E;</button>
+        <button type="button" class="sbtn" data-suit="C">♣&#xFE0E;</button>
+      </div>
+      <button type="submit" class="ans-go" id="ansGo"><span data-i18n="ans.go">Valider</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </form>
+  </div>
+
+  <!-- ============ ÉCRAN DE DIFFICULTÉ (au lancement) ============ -->
+  <section class="menu diffscreen" id="diffScreen">
+    <div class="menu-in">
+      <div class="logo">
+        <div class="fan"></div>
+        <h1>MÉMO 54</h1>
+        <p data-i18n="diff.title">Choisis ta difficulté</p>
+      </div>
+      <div class="diffs">
+        <button class="dcard" data-diff="normal" style="--dc:#2fae6b;--dc2:#16613b">
+          <div class="dhead"><span class="dlvl"><i class="on"></i><i></i><i></i></span><h3 data-i18n="diff.normal">Normal</h3></div>
+          <p data-i18n="diff.normal.d"></p>
+          <div class="dex" id="exNormal"></div>
+          <span class="dgo">▶</span>
+        </button>
+        <button class="dcard" data-diff="hard" style="--dc:#f0a03a;--dc2:#a1520f">
+          <div class="dhead"><span class="dlvl"><i class="on"></i><i class="on"></i><i></i></span><h3 data-i18n="diff.hard">Difficile</h3></div>
+          <p data-i18n="diff.hard.d"></p>
+          <div class="dex" id="exHard"></div>
+          <span class="dgo">▶</span>
+        </button>
+        <button class="dcard" data-diff="expert" style="--dc:#ff5d73;--dc2:#8d1c35">
+          <div class="dhead"><span class="dlvl"><i class="on"></i><i class="on"></i><i class="on"></i></span><h3 data-i18n="diff.expert">Expert</h3></div>
+          <p data-i18n="diff.expert.d"></p>
+          <div class="dex" id="exExpert"></div>
+          <span class="dgo">▶</span>
+        </button>
+      </div>
+      <div class="langs" data-langs></div>
+    </div>
+  </section>
+
+  <!-- ============ MENU DES MODES ============ -->
+  <section class="menu off" id="menu">
+    <div class="menu-in">
+      <div class="logo">
+        <div class="fan"></div>
+        <h1>MÉMO 54</h1>
+        <p data-i18n="menu.tag">Retiens l'ordre du paquet. Une erreur, et tout recommence.</p>
+      </div>
+      <button class="diff-pill" id="btnDiff"><span class="dlvl" id="diffLvl"></span><b id="diffName">Normal</b><span class="chg" data-i18n="diff.change">Changer</span></button>
+      <div class="hello" id="hello"></div>
+      <div class="modes">
+        <button class="mode" data-start="classic" style="--mc:linear-gradient(180deg,#2f8f5b,#16613b)">
+          <div class="mico">♠&#xFE0E;</div>
+          <div><h3 data-i18n="mode.classic">Classique</h3><p id="descClassic"></p><small id="recClassic"></small></div>
+          <span class="go">▶</span>
+        </button>
+        <button class="mode" data-start="infinite" style="--mc:linear-gradient(180deg,#7b4fd6,#4a2a9a)">
+          <div class="mico">∞</div>
+          <div><h3 data-i18n="mode.infinite">Infini</h3><p data-i18n="mode.infinite.d"></p><small id="recInfinite"></small></div>
+          <span class="go">▶</span>
+        </button>
+        <div class="mode" style="--mc:linear-gradient(180deg,#d9822b,#a1520f)">
+          <div class="mico">⏱&#xFE0E;</div>
+          <div><h3 data-i18n="mode.chrono">Chrono</h3><p data-i18n="mode.chrono.d"></p></div>
+          <span></span>
+          <div class="subs">
+            <button class="sub" data-start="half"><b data-i18n="mode.half">½ paquet</b><span data-i18n="mode.half.d"></span><em id="recHalf">—</em></button>
+            <button class="sub" data-start="full"><b data-i18n="mode.full">Paquet</b><span data-i18n="mode.full.d"></span><em id="recFull">—</em></button>
+            <button class="sub" data-start="c15"><b data-i18n="mode.c15">15 min</b><span data-i18n="mode.c15.d"></span><em id="recC15">—</em></button>
+          </div>
+        </div>
+      </div>
+      <div class="menu-foot">
+        <button class="btn" data-open="board" data-i18n="foot.board">🏆 Classement</button>
+        <button class="btn" data-open="settings" data-i18n="foot.settings">⚙ Paramètres</button>
+        <button class="btn" data-open="register" data-i18n="foot.profile">👤 Profil</button>
+      </div>
+      <details class="rules">
+        <summary data-i18n="rules.title">Comment jouer ?</summary>
+        <div data-i18n-html="rules.html"></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ CLASSEMENT ============ -->
+  <div class="modal" id="boardModal" data-closable>
+    <div class="panel">
+      <div class="phead"><h2 id="boardTitle">Top 10</h2><button class="x" data-close data-i18n-aria="aria.close">×</button></div>
+      <div class="seg" id="boardDiff"></div>
+      <nav class="tabs" id="boardTabs"></nav>
+      <div class="pbody" id="boardBody"><div class="blist" id="boardList"></div></div>
+      <div class="pfoot" id="boardFoot"></div>
+    </div>
+  </div>
+
+  <!-- ============ PROFIL / INSCRIPTION ============ -->
+  <div class="modal" id="regModal" data-closable>
+    <div class="panel">
+      <div class="phead"><h2 data-i18n="prof.title">Ton profil</h2><button class="x" data-close data-i18n-aria="aria.close">×</button></div>
+      <div class="pbody">
+        <div class="me-card"><div class="avatar" id="regAvatar">?</div><div><small data-i18n="prof.current">Pseudo actuel</small><b id="regCur">—</b></div></div>
+        <h4 data-i18n="prof.choose">Choisis ton pseudo</h4>
+        <div class="inrow">
+          <input class="field" id="regIn" maxlength="20" data-i18n-ph="prof.ph" autocomplete="off" spellcheck="false">
+          <button class="btn" id="regDice" data-i18n-aria="prof.dice">🎲</button>
+        </div>
+        <p class="hint" data-i18n="prof.hint"></p>
+        <div class="err" id="regErr"></div>
+        <button class="btn primary block" id="regGo" data-i18n="prof.save">Enregistrer ce pseudo</button>
+        <hr class="sep">
+        <h4 data-i18n="prof.code">Code de sauvegarde</h4>
+        <p class="hint" data-i18n="prof.code.hint"></p>
+        <div class="code"><code id="regCode">••••-••••-••••</code><button class="btn" id="regShow" data-i18n="prof.show">Afficher</button><button class="btn" id="regCopy" data-i18n="prof.copy">Copier</button></div>
+        <h4 data-i18n="prof.recover">Récupérer une sauvegarde</h4>
+        <div class="inrow"><input class="field" id="recIn" placeholder="XXXX-XXXX-XXXX" maxlength="14" autocomplete="off" spellcheck="false"><button class="btn" id="recGo" data-i18n="prof.recover.go">Récupérer</button></div>
+        <div class="err" id="recErr"></div>
+        <div class="net"><i id="netDot"></i><span id="netTxt">…</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PARAMÈTRES ============ -->
+  <div class="modal" id="setModal" data-closable>
+    <div class="panel">
+      <div class="phead"><h2 data-i18n="set.title">Paramètres</h2><button class="x" data-close data-i18n-aria="aria.close">×</button></div>
+      <nav class="tabs" id="setTabs">
+        <button data-t="look" class="on" data-i18n="set.t.look">Apparence</button>
+        <button data-t="lang" data-i18n="set.t.lang">Langue</button>
+        <button data-t="btn" data-i18n="set.t.btn">Boutons</button>
+        <button data-t="snd" data-i18n="set.t.snd">Son</button>
+        <button data-t="acc" data-i18n="set.t.acc">Données</button>
+      </nav>
+      <div class="pbody">
+        <div class="pane on" data-p="look">
+          <h4 data-i18n="set.bg">Fond du site</h4><div class="swatches" id="swBg"></div>
+          <h4 data-i18n="set.felt">Tapis de jeu</h4><div class="swatches" id="swFelt"></div>
+          <h4 data-i18n="set.cards">Style des cartes</h4><div class="cstyles" id="swCards"></div>
+        </div>
+        <div class="pane" data-p="lang">
+          <h4 data-i18n="set.lang.title">Langue du jeu</h4>
+          <div class="langs big" data-langs></div>
+          <p class="hint" data-i18n="set.lang.hint"></p>
+          <h4 data-i18n="set.lang.words">Réponses acceptées</h4>
+          <div class="words" id="wordTable"></div>
+        </div>
+        <div class="pane" data-p="btn">
+          <h4 data-i18n="set.btnRed">Bouton « Rouge » (gauche)</h4>
+          <div class="lbl-ed"><input class="field" id="inRed" maxlength="10" autocomplete="off" spellcheck="false"><input type="color" id="colRed"></div>
+          <div class="lbl-meta"><span class="err" id="errRed"></span><span id="cntRed">0/10</span></div>
+          <h4 data-i18n="set.btnBlack">Bouton « Noir » (droite)</h4>
+          <div class="lbl-ed"><input class="field" id="inBlack" maxlength="10" autocomplete="off" spellcheck="false"><input type="color" id="colBlack"></div>
+          <div class="lbl-meta"><span class="err" id="errBlack"></span><span id="cntBlack">0/10</span></div>
+          <p class="hint" data-i18n="set.btnHint"></p>
+          <button class="btn" id="btnLblReset" data-i18n="set.reset">Rétablir par défaut</button>
+        </div>
+        <div class="pane" data-p="snd">
+          <div class="slider"><span data-i18n="set.vol.master">Général</span><input type="range" min="0" max="100" id="volMaster"><output id="outMaster"></output></div>
+          <div class="slider"><span data-i18n="set.vol.sfx">Effets</span><input type="range" min="0" max="100" id="volSfx"><output id="outSfx"></output></div>
+          <div class="slider"><span data-i18n="set.vol.music">Musique</span><input type="range" min="0" max="100" id="volMusic"><output id="outMusic"></output></div>
+          <button class="btn" id="btnTestSnd" data-i18n="set.test">🔊 Tester</button>
+        </div>
+        <div class="pane" data-p="acc">
+          <p class="hint" data-i18n="set.acc.hint"></p>
+          <div class="net" style="margin:0 0 12px"><i id="netDot2"></i><span id="netTxt2">…</span></div>
+          <button class="btn block" id="btnTestNet" data-i18n="set.testNet">🔌 Tester la connexion au serveur</button>
+          <div class="hint" id="testNetOut" style="white-space:pre-line;margin:10px 0 16px"></div>
+          <button class="btn block" data-open="register" data-i18n="set.manage">👤 Gérer mon profil et mon code</button>
+          <hr class="sep">
+          <button class="btn danger block" id="btnWipe" data-i18n="set.wipe">Effacer les données de ce navigateur</button>
+          <p class="hint" data-i18n="set.wipe.hint"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ RÉSULTAT ============ -->
+  <div class="modal" id="resModal">
+    <div class="panel res">
+      <div class="res-ico" id="resIco">🏁</div>
+      <h2 id="resTitle"></h2>
+      <div class="res-score" id="resScore">0</div>
+      <div class="res-sub" id="resSub"></div>
+      <div id="resRec"></div>
+      <div class="res-sub" id="resRank"></div>
+      <div class="btns"><button class="btn" id="resMenu" data-i18n="res.menu">Menu</button><button class="btn" id="resBoard" data-i18n="foot.board">🏆 Classement</button><button class="btn primary" id="resAgain" data-i18n="res.again">Rejouer</button></div>
+    </div>
+  </div>
+
+  <!-- ============ CONFIRMATION ============ -->
+  <div class="modal" id="askModal">
+    <div class="panel res">
+      <h2 id="askTitle"></h2>
+      <div class="res-sub" id="askText" style="margin-top:8px"></div>
+      <div class="btns"><button class="btn" id="askNo" data-i18n="ask.cancel">Annuler</button><button class="btn primary" id="askYes">OK</button></div>
+    </div>
+  </div>
+
+  <div id="fly"></div>
+  <div id="banner"></div>
+  <div id="toast"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
